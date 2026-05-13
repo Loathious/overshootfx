@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alfred — Motion Designer, Stockholm</title>
+  <meta name="description" content="Alfred Gustafsson — indie motion designer in Stockholm. High-impact ads for software tools, physical products, and new brands." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    /* ── Base ── */
+    body {
+      background: #0a0a0a;
+      color: #e8e8e8;
+      font-family: 'Geist', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+
+    /* ── Custom cursor ── */
+    #cursor {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+    }
+    #cursor.large { width: 40px; height: 40px; border-color: rgba(255, 255, 255, 0.9); opacity: 1; }
+    #cursor.large::after {
+      content: '↗'; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%); font-size: 13px;
+      font-family: 'Geist', sans-serif; color: rgba(255, 255, 255, 0.9); line-height: 1;
+    }
+    @media (pointer: fine) {
+      #cursor { display: block; }
+      body { cursor: none; }
+      a, button, .chip-opt, .work-stack-card, select, label { cursor: none; }
+    }
+
+    /* ── NAV ── */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 60px; padding: 0 48px; display: flex; align-items: center;
+      transition: background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.3s ease;
+      border-bottom: 1px solid transparent;
+    }
+    #nav.scrolled {
+      background: rgba(8, 8, 8, 0.82);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border-bottom-color: rgba(255, 255, 255, 0.06);
+    }
+    .nav-inner {
+      width: 100%; max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { display: flex; align-items: center; text-decoration: none; color: inherit; }
+    .nav-wordmark {
+      font-size: 14px; font-weight: 600; letter-spacing: -0.025em;
+      color: #e8e8e8; transition: text-shadow 0.3s ease;
+    }
+    .nav-brand:hover .nav-wordmark { text-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
+    .nav-aka {
+      font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 400;
+      color: rgba(232, 232, 232, 0.35); margin-left: 10px; letter-spacing: 0;
+    }
+    .nav-links { list-style: none; display: flex; align-items: center; gap: 36px; }
+    .nav-links a {
+      font-size: 13.5px; font-weight: 400; letter-spacing: 0.005em;
+      color: rgba(232, 232, 232, 0.48); text-decoration: none; position: relative; transition: color 0.2s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 1px; background: rgba(232, 232, 232, 0.5); transition: width 0.2s ease;
+    }
+    .nav-links a:hover { color: #e8e8e8; }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* Hamburger */
+    .nav-toggle {
+      display: none; flex-direction: column; justify-content: center;
+      gap: 5px; background: none; border: none; padding: 6px;
+      color: rgba(232, 232, 232, 0.55); z-index: 101;
+    }
+    .nav-toggle-bar {
+      display: block; width: 18px; height: 1.5px; background: currentColor;
+      border-radius: 1px; transition: transform 0.25s ease, opacity 0.2s ease; transform-origin: center;
+    }
+    .nav-toggle[aria-expanded="true"] .bar-top { transform: translateY(6.5px) rotate(45deg); }
+    .nav-toggle[aria-expanded="true"] .bar-mid { opacity: 0; transform: scaleX(0); }
+    .nav-toggle[aria-expanded="true"] .bar-bot { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* Mobile nav panel */
+    .nav-mobile {
+      display: none; position: fixed; top: 60px; left: 0; right: 0;
+      background: rgba(6, 6, 6, 0.97);
+      backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06); z-index: 99;
+      padding: 8px 24px 32px; opacity: 0; transform: translateY(-6px);
+      pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-mobile.open { opacity: 1; transform: none; pointer-events: auto; }
+    .nav-mobile ul { list-style: none; }
+    .nav-mobile a {
+      display: block; font-size: 24px; font-weight: 600; letter-spacing: -0.03em;
+      color: rgba(232, 232, 232, 0.70); text-decoration: none;
+      padding: 16px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: color 0.2s;
+    }
+    .nav-mobile li:last-child a { border-bottom: none; }
+    .nav-mobile a:hover { color: #e8e8e8; }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative; min-height: 100vh; min-height: 100svh;
+      overflow: hidden; background-color: #060608;
+    }
+
+    /* Grain overlay */
+    #hero::before {
+      content: ''; position: absolute; inset: 0; z-index: 3;
+      pointer-events: none; opacity: 0.028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+    }
+
+    /* Vignette */
+    #hero::after {
+      content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+      background: radial-gradient(ellipse 120% 100% at 50% 0%, transparent 40%, rgba(6,6,8,0.55) 100%);
+    }
+
+    /* Glow orbs — depth layer 1 (far) */
+    .hero-glow-tr {
+      position: absolute; top: -240px; right: -140px; width: 900px; height: 900px;
+      border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.075) 0%, rgba(255,255,255,0.018) 40%, transparent 70%);
+      pointer-events: none; z-index: 0; will-change: transform;
+    }
+    .hero-glow-bl {
+      position: absolute; bottom: -120px; left: -80px; width: 420px; height: 420px;
+      border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+      pointer-events: none; z-index: 0; will-change: transform;
+    }
+
+    /* Glow orb — depth layer 2 (mid, drifts slowly) */
+    .hero-glow-mid {
+      position: absolute; top: 10%; left: 15%; width: 600px; height: 600px;
+      border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.028) 0%, transparent 65%);
+      pointer-events: none; z-index: 0; will-change: transform;
+      animation: glowDrift 18s ease-in-out infinite alternate;
+    }
+
+    /* Glow bloom behind headline */
+    .hero-glow-h1 {
+      position: absolute; top: 22%; left: -10%; width: 700px; height: 520px;
+      border-radius: 50%; background: radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, transparent 65%);
+      pointer-events: none; z-index: 0; will-change: transform;
+    }
+
+    @keyframes glowDrift {
+      0%   { transform: translate(0px, 0px) scale(1); }
+      33%  { transform: translate(40px, -25px) scale(1.04); }
+      66%  { transform: translate(-20px, 30px) scale(0.97); }
+      100% { transform: translate(25px, -15px) scale(1.02); }
+    }
+
+    #hero-canvas {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 1;
+    }
+
+    .hero-inner {
+      position: relative; z-index: 4; max-width: 1280px; margin: 0 auto;
+      padding: max(110px, calc(40vh - 60px)) 48px 200px;
+    }
+
+    /* Status pill */
+    .hero-status { margin-bottom: 44px; }
+    .hero-status .stxt {
+      font-family: 'Geist Mono', monospace; font-size: 10.5px;
+      letter-spacing: 0.10em; color: rgba(232, 232, 232, 0.30);
+    }
+    .hero-status .stxt-dot {
+      display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+      background: rgba(255,255,255,0.35); margin-right: 10px; vertical-align: middle;
+      animation: dotPulse 3s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0.35; transform: scale(1); }
+      50% { opacity: 0.9; transform: scale(1.3); }
+    }
+
+    .hero-h1 {
+      font-size: 80px; font-weight: 800; line-height: 1.03;
+      letter-spacing: -0.048em; color: #f4f4f4; margin-bottom: 40px;
+    }
+    .h1-line { display: block; }
+    .hero-h1 .accent {
+      font-style: italic;
+      color: #ffffff;
+      text-shadow: 0 0 60px rgba(255,255,255,0.22), 0 0 120px rgba(255,255,255,0.08);
+    }
+
+    .hero-rule { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 0 0 32px; max-width: 600px; }
+
+    .hero-sub {
+      font-size: 15.5px; line-height: 1.65; color: rgba(232,232,232,0.50);
+      max-width: 460px; margin-bottom: 52px; font-weight: 400; letter-spacing: 0.005em;
+    }
+
+    .hero-ctas { display: flex; align-items: center; gap: 36px; flex-wrap: wrap; }
+
+    .cta-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: rgba(232,232,232,0.92); text-decoration: none;
+      font-size: 14.5px; font-weight: 500; position: relative; white-space: nowrap;
+      transition: color 0.25s ease;
+    }
+    .cta-primary::after {
+      content: ''; position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 1px; background: rgba(255,255,255,0.7);
+      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .cta-primary:hover { color: #fff; }
+    .cta-primary:hover::after { width: 100%; }
+    .cta-arrow {
+      display: inline-block;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .cta-primary:hover .cta-arrow { transform: translateX(5px); }
+
+    .cta-secondary {
+      color: rgba(232,232,232,0.35); text-decoration: none;
+      font-size: 14.5px; font-weight: 400;
+      transition: color 0.3s ease; white-space: nowrap; letter-spacing: 0.01em;
+    }
+    .cta-secondary:hover { color: rgba(232,232,232,0.75); }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      z-index: 5; transition: opacity 0.5s ease;
+    }
+    .scroll-line {
+      width: 1px; height: 0; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.20));
+      animation: lineExtend 0.6s cubic-bezier(0.16,1,0.3,1) 1400ms forwards;
+    }
+    @keyframes lineExtend { to { height: 44px; } }
+    .scroll-chevron { opacity: 0; animation: chevronFade 0.4s ease 2000ms forwards; }
+    @keyframes chevronFade { to { opacity: 0.4; } }
+
+    /* Hero entrance animations */
+    [data-hero-anim] {
+      opacity: 0; transform: translateY(24px);
+      animation: heroIn var(--dur, 0.9s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: var(--delay, 0ms);
+    }
+    .hero-status[data-hero-anim] { --dur: 0.6s; transform: translateY(8px); }
+    .hero-h1[data-hero-anim]     { --dur: 1.1s; transform: translateY(32px); }
+    .hero-rule[data-hero-anim]   { --dur: 0.5s; transform: none; opacity: 0; }
+    .hero-sub[data-hero-anim]    { --dur: 0.8s; transform: translateY(18px); }
+    .hero-ctas[data-hero-anim]   { --dur: 0.6s; transform: translateY(14px); }
+    @keyframes heroIn { to { opacity: 1; transform: none; } }
+
+    /* ── Section commons ── */
+    .section { position: relative; }
+    .si { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+    .wm {
+      position: absolute; top: 32px; left: 32px;
+      font-size: clamp(80px, 16vw, 220px); font-weight: 800; letter-spacing: -0.04em;
+      color: rgba(255,255,255,1); opacity: 0; pointer-events: none; user-select: none;
+      white-space: nowrap; line-height: 1; z-index: 0; transition: opacity 0.7s ease;
+    }
+    .wm.visible { opacity: 0.06; }
+    .sec-label {
+      font-family: 'Geist Mono', monospace; font-size: 10.5px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(232,232,232,0.28); margin-bottom: 48px;
+      display: inline-flex; align-items: center; gap: 14px;
+    }
+    .sec-label::after { content: ''; display: block; width: 32px; height: 1px; background: rgba(255,255,255,0.12); }
+
+    /* ── PRESS BAR ── */
+    #press { border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 22px 48px; }
+    .press-row { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+    .press-eyebrow { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(232,232,232,0.22); white-space: nowrap; flex-shrink: 0; }
+    .press-names-line { font-family: 'Geist', sans-serif; font-size: 13px; font-weight: 400; color: rgba(232,232,232,0.35); }
+
+    /* ── WORK ── */
+    #work { padding-top: 200px; }
+    .work-head { margin-bottom: 52px; }
+    .work-stack { padding: 0 24px 200px; }
+    .work-stack-item { height: 75vh; min-height: 520px; }
+    .work-stack-item:last-child { height: auto; min-height: auto; }
+    .work-stack-card {
+      position: sticky; max-width: 900px; margin: 0 auto;
+      background: #131313; border: 1px solid rgba(255,255,255,0.13); border-radius: 6px;
+      overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
+      transition: transform 0.15s ease; transform-origin: top center;
+    }
+    .work-stack-item:nth-child(1) .work-stack-card { top: 80px; z-index: 1; }
+    .work-stack-item:nth-child(2) .work-stack-card { top: 100px; z-index: 2; }
+    .work-stack-item:nth-child(3) .work-stack-card { top: 120px; z-index: 3; }
+    .work-thumb { aspect-ratio: 16/9; background: #161616; position: relative; overflow: hidden; }
+    .thumb-pattern { position: absolute; inset: 0; width: 100%; height: 100%; transition: transform 400ms ease; }
+    .work-stack-card:hover .thumb-pattern { transform: translateY(2px); }
+    .thumb-year { position: absolute; top: 12px; left: 12px; font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(232,232,232,0.25); letter-spacing: 0.06em; z-index: 1; }
+    .thumb-vid { position: absolute; bottom: 12px; right: 12px; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.12em; color: rgba(232,232,232,0.12); z-index: 1; }
+    .work-thumb::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%); opacity: 0; transition: opacity 0.3s ease; z-index: 2; }
+    .work-stack-card:hover .work-thumb::after { opacity: 1; }
+    .work-body { padding: 16px 24px 24px; }
+    .work-meta-row { display: flex; justify-content: space-between; align-items: center; }
+    .work-client { font-size: 17px; font-weight: 600; letter-spacing: -0.025em; color: rgba(232,232,232,0.90); }
+    .work-tagline { font-size: 13px; color: rgba(232,232,232,0.35); margin-top: 4px; }
+    .work-year { font-family: 'Geist Mono', monospace; font-size: 11px; color: rgba(232,232,232,0.30); letter-spacing: 0.06em; }
+    .work-year-group { display: flex; align-items: center; gap: 8px; }
+    .work-badge { font-size: 9px; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(232,232,232,0.50); border: 1px solid rgba(255,255,255,0.15); padding: 2px 7px; border-radius: 3px; }
+
+    /* ── ABOUT ── */
+    #about { padding: 200px 0; }
+    .about-layout { display: grid; grid-template-columns: 1fr 272px; gap: 80px; align-items: start; }
+    .about-prose p { font-size: 15px; line-height: 1.65; color: rgba(232,232,232,0.58); margin-bottom: 24px; max-width: 600px; }
+    .about-prose p:last-child { margin-bottom: 0; }
+    .about-card { position: sticky; top: 80px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.09); border-radius: 6px; overflow: hidden; }
+    .card-row { display: flex; justify-content: space-between; align-items: center; padding: 13px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .card-row:last-of-type { border-bottom: none; }
+    .card-key { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(232,232,232,0.26); }
+    .card-val { font-size: 12.5px; font-weight: 500; color: rgba(232,232,232,0.72); }
+    .card-val--available { color: rgba(232,232,232,0.90); }
+    .card-chips-block { padding: 16px 20px; }
+    .card-chips-label { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(232,232,232,0.26); margin-bottom: 10px; }
+    .chip-static-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip-s { font-size: 11px; padding: 3px 9px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.07); border-radius: 4px; color: rgba(232,232,232,0.50); }
+    .card-divider { height: 1px; background: rgba(255,255,255,0.05); }
+
+    /* ── PROCESS ── */
+    /* ── PROCESS (scroll showcase) ── */
+    #process { padding-top: 180px; padding-bottom: 180px; }
+    .process-head { margin-bottom: 64px; }
+    .process-showcase {
+      display: flex; gap: 80px; align-items: flex-start;
+      max-width: 1280px; margin: 0 auto; padding: 0 48px;
+    }
+    /* Sticky visual panel */
+    .process-visuals {
+      position: sticky; top: 100px; flex: 0 0 500px;
+      height: 400px; border-radius: 8px;
+    }
+    .process-visual-item {
+      position: absolute; inset: 0; border-radius: 8px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      opacity: 0; transform: scale(0.96) translateY(14px);
+      transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+      will-change: opacity, transform;
+    }
+    .process-visual-item.active { opacity: 1; transform: none; }
+    .process-visual-item svg { width: 100%; height: 100%; display: block; }
+    /* Step list */
+    .process-steps-list { flex: 1; padding-bottom: 220px; }
+    .process-step-item {
+      padding: 44px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+      opacity: 0.22; transition: opacity 0.55s ease;
+    }
+    .process-step-item:first-child { padding-top: 0; }
+    .process-step-item:last-child { border-bottom: none; }
+    .process-step-item.active { opacity: 1; }
+    .psi-num {
+      font-family: 'Geist Mono', monospace; font-size: 10px; font-weight: 500;
+      color: rgba(232,232,232,0.28); letter-spacing: 0.14em; margin-bottom: 18px;
+      transition: color 0.4s ease;
+    }
+    .process-step-item.active .psi-num { color: rgba(232,232,232,0.45); }
+    .psi-title {
+      font-size: 24px; font-weight: 700; letter-spacing: -0.038em;
+      color: rgba(242,242,242,0.88); line-height: 1.18; margin-bottom: 8px;
+    }
+    .psi-timing {
+      font-family: 'Geist Mono', monospace; font-size: 10.5px;
+      color: rgba(232,232,232,0.20); letter-spacing: 0.07em; margin-bottom: 18px;
+      transition: color 0.4s ease;
+    }
+    .process-step-item.active .psi-timing { color: rgba(232,232,232,0.32); }
+    .psi-desc {
+      font-size: 14px; line-height: 1.72; color: rgba(232,232,232,0.38);
+      max-width: 380px; transition: color 0.4s ease;
+    }
+    .process-step-item.active .psi-desc { color: rgba(232,232,232,0.56); }
+
+    /* ── CONTACT ── */
+    #contact { padding: 200px 0; }
+    .contact-head { margin-bottom: 60px; }
+    .contact-h2 { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; color: rgba(242,242,242,0.90); line-height: 1.08; margin-bottom: 14px; }
+    .contact-sub { font-size: 15px; color: rgba(232,232,232,0.40); }
+    .contact-form { max-width: 760px; }
+    .form-section { margin-bottom: 40px; }
+    .form-section-head { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 14px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.10); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .form-num { font-family: 'Geist Mono', monospace; font-size: 10px; font-weight: 400; color: rgba(232,232,232,0.25); letter-spacing: 0.15em; }
+    .form-sec-title { font-size: 13px; font-weight: 500; letter-spacing: -0.01em; color: rgba(232,232,232,0.52); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-field { position: relative; display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+    .form-field:last-child { margin-bottom: 0; }
+    .form-field label { font-size: 11px; font-weight: 500; letter-spacing: 0.03em; color: rgba(232,232,232,0.36); }
+    .req { color: rgba(232,232,232,0.40); }
+    .form-field input, .form-field select, .form-field textarea { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 10px 14px; font-family: 'Geist', sans-serif; font-size: 14px; color: #e8e8e8; outline: none; transition: border-color 0.2s; width: 100%; -webkit-appearance: none; appearance: none; }
+    .form-field input::placeholder, .form-field textarea::placeholder { color: rgba(232,232,232,0.20); }
+    .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: rgba(255,255,255,0.25); }
+    .form-field::after { content: ''; position: absolute; left: 0; bottom: 0; height: 1px; width: 100%; background: rgba(255,255,255,0.4); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; pointer-events: none; }
+    .form-field:focus-within::after { transform: scaleX(1); }
+    .form-field select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4L6 8L10 4' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+    .form-field select option { background: #1a1a1a; color: #e8e8e8; }
+    .form-field textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+    .chip-select { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip-opt { display: inline-flex; align-items: center; padding: 6px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; font-size: 12.5px; color: rgba(232,232,232,0.48); transition: background 0.15s, border-color 0.15s, color 0.15s; user-select: none; position: relative; }
+    .chip-opt input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+    .chip-opt:has(input:checked) { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.30); color: #e8e8e8; }
+    .form-legal { font-size: 11.5px; line-height: 1.65; color: rgba(232,232,232,0.24); margin-bottom: 28px; max-width: 560px; }
+    .btn-submit { display: inline-flex; align-items: center; padding: 13px 28px; background: transparent; color: rgba(232,232,232,0.90); font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; transition: border-color 0.25s, box-shadow 0.25s; }
+    .btn-submit:hover { border-color: rgba(255,255,255,0.30); box-shadow: 0 0 30px rgba(255,255,255,0.08); }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 64px 48px 48px; overflow: hidden; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; }
+    .footer-wm { font-size: 96px; font-weight: 800; letter-spacing: -0.055em; color: rgba(232,232,232,0.12); line-height: 0.85; margin-bottom: 48px; pointer-events: none; user-select: none; text-shadow: 0 0 120px rgba(255,255,255,0.06); }
+    .footer-bottom { display: flex; align-items: center; justify-content: space-between; }
+    .footer-copy { font-family: 'Geist Mono', monospace; font-size: 11px; color: rgba(232,232,232,0.26); letter-spacing: 0.03em; }
+    .footer-links { display: flex; align-items: center; gap: 20px; }
+    .footer-links a { display: inline-flex; align-items: center; color: rgba(232,232,232,0.40); text-decoration: none; transition: color 0.2s; }
+    .footer-links a svg { display: block; }
+    .footer-links a:hover { color: rgba(232,232,232,0.90); }
+
+    /* ── Scroll reveals ── */
+    .js-ready [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+    .js-ready [data-reveal].visible { opacity: 1; transform: none; }
+    .js-ready [data-reveal="left"] { opacity: 0; transform: translateX(16px); transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+    .js-ready [data-reveal="left"].visible { opacity: 1; transform: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 980px) {
+      .hero-h1 { font-size: clamp(48px, 8vw, 76px); }
+      .about-layout { grid-template-columns: 1fr; gap: 48px; }
+      .about-card { position: static; }
+    }
+    @media (max-width: 760px) {
+      .work-stack-item { height: auto; min-height: auto; margin-bottom: 16px; }
+      .work-stack-item:last-child { margin-bottom: 0; }
+      .work-stack-card { position: static !important; }
+    }
+    @media (max-width: 860px) {
+      .process-showcase { flex-direction: column; gap: 0; padding: 0 20px; }
+      .process-visuals { position: static; flex: none; width: 100%; height: 280px; margin-bottom: 48px; }
+      .process-steps-list { padding-bottom: 0; width: 100%; }
+      .process-step-item { opacity: 1 !important; }
+    }
+    @media (max-width: 600px) {
+      #nav { padding: 0 20px; }
+      .nav-toggle { display: flex; }
+      .nav-links, .nav-aka { display: none; }
+      .nav-mobile { display: block; }
+      .si { padding-left: 20px; padding-right: 20px; }
+      #press { padding-left: 20px; padding-right: 20px; }
+      .hero-inner { padding: 100px 20px 100px; }
+      .hero-h1 { font-size: clamp(38px, 10vw, 58px); }
+      .hero-status { margin-bottom: 24px; }
+      .hero-sub { margin-bottom: 36px; max-width: 100%; }
+      .hero-ctas { gap: 20px; }
+      .hero-rule { margin-bottom: 24px; }
+      #work { padding-top: 80px; }
+      .work-stack { padding: 0 12px 48px; }
+      .work-body { padding: 12px 16px 18px; }
+      .work-client { font-size: 15px; }
+      #about, #contact { padding-top: 80px; padding-bottom: 48px; }
+      #process { padding-top: 80px; padding-bottom: 48px; }
+      .about-layout { gap: 32px; }
+      .sec-label { margin-bottom: 32px; }
+      .process-head { margin-bottom: 48px; }
+      .contact-head { margin-bottom: 40px; }
+      .contact-h2 { font-size: 28px; }
+      .form-row { grid-template-columns: 1fr; }
+      .form-section { margin-bottom: 32px; }
+      footer { padding: 40px 20px 32px; }
+      .footer-wm { font-size: 60px; margin-bottom: 32px; }
+      .footer-bottom { flex-direction: column; gap: 20px; align-items: flex-start; }
+      .scroll-indicator { display: none; }
+      .wm { top: 16px; left: 16px; }
+    }
+    @media (max-width: 480px) {
+      .hero-h1 { font-size: clamp(32px, 9vw, 44px); }
+      .footer-wm { font-size: 44px; }
+      .work-badge { display: none; }
+      .chip-select { gap: 6px; }
+      .chip-opt { padding: 5px 10px; font-size: 12px; }
+    }
+
+    /* ── Reduced motion ── */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      [data-hero-anim] { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .js-ready [data-reveal], .js-ready [data-reveal="left"] { opacity: 1 !important; transform: none !important; transition: none !important; }
+      .wm { opacity: 0.06 !important; transition: none !important; }
+      .scroll-line { animation: none; height: 44px; }
+      .scroll-chevron { animation: none; opacity: 0.4; }
+      .thumb-pattern { transition: none; }
+      .work-stack-card { transition: none !important; }
+      .nav-mobile { transition: none !important; }
+      .nav-toggle-bar { transition: none !important; }
+      .hero-glow-mid { animation: none !important; }
+      .stxt-dot { animation: none !important; opacity: 0.35; }
+    }
+
+    /* Mobile hero tweaks */
+    @media (max-width: 600px) {
+      .hero-glow-mid { display: none; }
+      #hero::before { opacity: 0.018; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom cursor -->
+  <div id="cursor" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <nav id="nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand" aria-label="Alfred — home">
+        <span class="nav-wordmark">Alfred</span>
+        <span class="nav-aka">@Overshoot</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#work">Work</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
+        <span class="nav-toggle-bar bar-top"></span>
+        <span class="nav-toggle-bar bar-mid"></span>
+        <span class="nav-toggle-bar bar-bot"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile nav panel -->
+  <div class="nav-mobile" id="nav-mobile">
+    <ul>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-glow-tr" aria-hidden="true"></div>
+    <div class="hero-glow-bl" aria-hidden="true"></div>
+    <div class="hero-glow-mid" aria-hidden="true"></div>
+    <div class="hero-glow-h1" aria-hidden="true"></div>
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+
+    <div class="hero-inner">
+      <div class="hero-status" data-hero-anim style="--delay:80ms">
+        <span class="stxt"><span class="stxt-dot" aria-hidden="true"></span>Available for projects &nbsp;·&nbsp; Spring 2026</span>
+      </div>
+
+      <h1 class="hero-h1" data-hero-anim style="--delay:200ms">
+        <span class="h1-line">Your product is world-class.</span>
+        <span class="h1-line">Your <em class="accent">demo</em> should be too.</span>
+      </h1>
+
+      <hr class="hero-rule" data-hero-anim style="--delay:360ms" />
+
+      <p class="hero-sub" data-hero-anim style="--delay:460ms">
+        Motion designer in Stockholm. I work with early-stage startups and product teams who know what they've built - they just need the world to see it clearly. Specialized in SaaS demos and AI explainers.
+      </p>
+
+      <div class="hero-ctas" data-hero-anim style="--delay:580ms">
+        <a href="#work" class="cta-primary">
+          View work <span class="cta-arrow">→</span>
+        </a>
+        <a href="#contact" class="cta-secondary">Start a project</a>
+      </div>
+    </div>
+
+    <div class="scroll-indicator" aria-hidden="true">
+      <div class="scroll-line"></div>
+      <div class="scroll-chevron">
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
+          <path d="M1 1L5 5L9 1" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRESS BAR -->
+  <div id="press">
+    <div class="press-row">
+      <span class="press-eyebrow">Worked with</span>
+      <span class="press-names-line">Raycast &nbsp;·&nbsp; Bezi &nbsp;·&nbsp; undisclosed</span>
+    </div>
+  </div>
+
+  <!-- WORK -->
+  <section id="work" class="section">
+    <div class="wm" aria-hidden="true">Work</div>
+    <div class="si">
+      <div class="work-head" data-reveal>
+        <p class="sec-label">Selected work</p>
+      </div>
+    </div>
+
+    <div class="work-stack">
+
+      <!-- Card 1: Raycast -->
+      <div class="work-stack-item">
+        <article class="work-stack-card" data-reveal>
+          <div class="work-thumb">
+            <span class="thumb-year">2025</span>
+            <span class="thumb-vid">MOTION REEL</span>
+            <svg class="thumb-pattern" viewBox="0 0 480 270" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+              <!-- Background -->
+              <rect width="480" height="270" fill="#111111"/>
+              <!-- Subtle orange ambient -->
+              <ellipse cx="240" cy="135" rx="260" ry="160" fill="rgba(255,120,40,0.04)"/>
+              <!-- Window chrome -->
+              <rect x="80" y="30" width="320" height="210" rx="8" fill="#1a1a1a" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              <!-- Title bar -->
+              <rect x="80" y="30" width="320" height="32" rx="8" fill="#1f1f1f"/>
+              <rect x="80" y="50" width="320" height="12" fill="#1f1f1f"/>
+              <circle cx="98" cy="46" r="4" fill="rgba(255,255,255,0.08)"/>
+              <circle cx="112" cy="46" r="4" fill="rgba(255,255,255,0.08)"/>
+              <circle cx="126" cy="46" r="4" fill="rgba(255,255,255,0.08)"/>
+              <!-- Search bar -->
+              <rect x="100" y="74" width="280" height="30" rx="6" fill="#222222" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+              <rect x="114" y="84" width="8" height="10" rx="1" fill="rgba(255,255,255,0.18)"/>
+              <rect x="130" y="87" width="80" height="4" rx="2" fill="rgba(255,255,255,0.22)"/>
+              <rect x="355" y="84" width="16" height="10" rx="2" fill="rgba(255,255,255,0.06)"/>
+              <!-- Divider -->
+              <line x1="100" y1="114" x2="380" y2="114" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <!-- Result rows -->
+              <rect x="100" y="122" width="16" height="16" rx="3" fill="rgba(255,120,40,0.25)"/>
+              <rect x="124" y="125" width="90" height="4" rx="2" fill="rgba(255,255,255,0.30)"/>
+              <rect x="124" y="133" width="60" height="3" rx="1.5" fill="rgba(255,255,255,0.12)"/>
+              <rect x="340" y="125" width="30" height="4" rx="2" fill="rgba(255,255,255,0.08)"/>
+
+              <rect x="100" y="150" width="16" height="16" rx="3" fill="rgba(255,255,255,0.07)"/>
+              <rect x="124" y="153" width="110" height="4" rx="2" fill="rgba(255,255,255,0.18)"/>
+              <rect x="124" y="161" width="70" height="3" rx="1.5" fill="rgba(255,255,255,0.08)"/>
+
+              <rect x="100" y="178" width="16" height="16" rx="3" fill="rgba(255,255,255,0.07)"/>
+              <rect x="124" y="181" width="75" height="4" rx="2" fill="rgba(255,255,255,0.18)"/>
+              <rect x="124" y="189" width="50" height="3" rx="1.5" fill="rgba(255,255,255,0.08)"/>
+
+              <rect x="100" y="206" width="16" height="16" rx="3" fill="rgba(255,255,255,0.07)"/>
+              <rect x="124" y="209" width="95" height="4" rx="2" fill="rgba(255,255,255,0.18)"/>
+              <rect x="124" y="217" width="65" height="3" rx="1.5" fill="rgba(255,255,255,0.08)"/>
+              <!-- Bottom row hint -->
+              <line x1="80" y1="232" x2="400" y2="232" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <rect x="100" y="238" width="40" height="3" rx="1.5" fill="rgba(255,255,255,0.06)"/>
+              <rect x="320" y="238" width="40" height="3" rx="1.5" fill="rgba(255,255,255,0.06)"/>
+              <!-- Orange glow overlay -->
+              <ellipse cx="240" cy="135" rx="180" ry="100" fill="rgba(255,120,40,0.03)"/>
+            </svg>
+          </div>
+          <div class="work-body">
+            <div class="work-meta-row">
+              <div>
+                <div class="work-client">Raycast</div>
+                <div class="work-tagline">Productivity, animated.</div>
+              </div>
+              <span class="work-year">2025</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Card 2: Bezi -->
+      <div class="work-stack-item">
+        <article class="work-stack-card" data-reveal>
+          <div class="work-thumb">
+            <span class="thumb-year">2025</span>
+            <span class="thumb-vid">MOTION REEL</span>
+            <svg class="thumb-pattern" viewBox="0 0 480 270" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+              <!-- Background -->
+              <rect width="480" height="270" fill="#0e0e0e"/>
+              <!-- Blue ambient -->
+              <ellipse cx="240" cy="135" rx="300" ry="180" fill="rgba(80,140,255,0.04)"/>
+              <!-- Top bar -->
+              <rect x="0" y="0" width="480" height="36" fill="#141414" stroke="rgba(255,255,255,0.06)" stroke-width="0" />
+              <line x1="0" y1="36" x2="480" y2="36" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <rect x="12" y="12" width="48" height="12" rx="2" fill="rgba(255,255,255,0.06)"/>
+              <rect x="72" y="12" width="36" height="12" rx="2" fill="rgba(255,255,255,0.06)"/>
+              <rect x="120" y="12" width="36" height="12" rx="2" fill="rgba(255,255,255,0.06)"/>
+              <circle cx="248" cy="18" r="3" fill="rgba(255,255,255,0.15)"/>
+              <rect x="420" y="10" width="16" height="16" rx="3" fill="rgba(80,140,255,0.25)"/>
+              <!-- Left toolbar -->
+              <rect x="0" y="36" width="40" height="234" fill="#121212" />
+              <line x1="40" y1="36" x2="40" y2="270" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <rect x="10" y="52" width="20" height="20" rx="3" fill="rgba(255,255,255,0.08)"/>
+              <rect x="10" y="80" width="20" height="20" rx="3" fill="rgba(80,140,255,0.20)"/>
+              <rect x="10" y="108" width="20" height="20" rx="3" fill="rgba(255,255,255,0.05)"/>
+              <rect x="10" y="136" width="20" height="20" rx="3" fill="rgba(255,255,255,0.05)"/>
+              <rect x="10" y="164" width="20" height="20" rx="3" fill="rgba(255,255,255,0.05)"/>
+              <!-- Right panel -->
+              <rect x="370" y="36" width="110" height="234" fill="#121212"/>
+              <line x1="370" y1="36" x2="370" y2="270" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <rect x="382" y="52" width="60" height="3" rx="1.5" fill="rgba(255,255,255,0.20)"/>
+              <rect x="382" y="66" width="40" height="3" rx="1.5" fill="rgba(255,255,255,0.08)"/>
+              <line x1="370" y1="78" x2="480" y2="78" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <rect x="382" y="88" width="30" height="3" rx="1.5" fill="rgba(255,255,255,0.12)"/>
+              <rect x="382" y="98" width="86" height="18" rx="3" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              <rect x="382" y="122" width="86" height="18" rx="3" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              <line x1="370" y1="148" x2="480" y2="148" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <rect x="382" y="158" width="30" height="3" rx="1.5" fill="rgba(255,255,255,0.12)"/>
+              <rect x="382" y="170" width="86" height="10" rx="2" fill="rgba(80,140,255,0.15)" stroke="rgba(80,140,255,0.25)" stroke-width="1"/>
+              <!-- Canvas area -->
+              <!-- Selected rect with handles -->
+              <rect x="110" y="80" width="200" height="130" rx="2" fill="rgba(255,255,255,0.04)" stroke="rgba(80,140,255,0.60)" stroke-width="1.5" stroke-dasharray="0"/>
+              <!-- Selection handles -->
+              <rect x="107" y="77" width="6" height="6" rx="1" fill="#0a0a0a" stroke="rgba(80,140,255,0.9)" stroke-width="1.5"/>
+              <rect x="207" y="77" width="6" height="6" rx="1" fill="#0a0a0a" stroke="rgba(80,140,255,0.9)" stroke-width="1.5"/>
+              <rect x="307" y="77" width="6" height="6" rx="1" fill="#0a0a0a" stroke="rgba(80,140,255,0.9)" stroke-width="1.5"/>
+              <rect x="107" y="207" width="6" height="6" rx="1" fill="#0a0a0a" stroke="rgba(80,140,255,0.9)" stroke-width="1.5"/>
+              <rect x="207" y="207" width="6" height="6" rx="1" fill="#0a0a0a" stroke="rgba(80,140,255,0.9)" stroke-width="1.5"/>
+              <rect x="307" y="207" width="6" height="6" rx="1" fill="#0a0a0a" stroke="rgba(80,140,255,0.9)" stroke-width="1.5"/>
+              <!-- Inner element -->
+              <rect x="130" y="100" width="80" height="50" rx="2" fill="rgba(255,255,255,0.07)"/>
+              <rect x="230" y="100" width="60" height="20" rx="2" fill="rgba(80,140,255,0.18)"/>
+              <!-- Label tooltip -->
+              <rect x="110" y="62" width="52" height="13" rx="2" fill="rgba(80,140,255,0.85)"/>
+              <rect x="115" y="66" width="42" height="3" rx="1.5" fill="rgba(255,255,255,0.9)"/>
+              <!-- Blue glow -->
+              <ellipse cx="210" cy="145" rx="120" ry="80" fill="rgba(80,140,255,0.04)"/>
+            </svg>
+          </div>
+          <div class="work-body">
+            <div class="work-meta-row">
+              <div>
+                <div class="work-client">Bezi</div>
+                <div class="work-tagline">3D, demystified.</div>
+              </div>
+              <span class="work-year">2025</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Card 3: Undisclosed -->
+      <div class="work-stack-item">
+        <article class="work-stack-card" data-reveal>
+          <div class="work-thumb">
+            <span class="thumb-year">2026</span>
+            <span class="thumb-vid">IN PROGRESS</span>
+            <svg class="thumb-pattern" viewBox="0 0 480 270" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+              <!-- Background -->
+              <rect width="480" height="270" fill="#0c0c0c"/>
+              <!-- Light blue ambient -->
+              <ellipse cx="240" cy="135" rx="300" ry="180" fill="rgba(160,200,255,0.03)"/>
+              <!-- Top nav -->
+              <rect x="0" y="0" width="480" height="40" fill="#131313"/>
+              <line x1="0" y1="40" x2="480" y2="40" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <rect x="16" y="13" width="60" height="14" rx="2" fill="rgba(255,255,255,0.08)"/>
+              <rect x="400" y="13" width="24" height="14" rx="3" fill="rgba(160,200,255,0.20)"/>
+              <circle cx="374" cy="20" r="8" fill="rgba(255,255,255,0.06)"/>
+              <!-- Sidebar -->
+              <rect x="0" y="40" width="60" height="230" fill="#111111"/>
+              <line x1="60" y1="40" x2="60" y2="270" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <rect x="12" y="56" width="36" height="8" rx="2" fill="rgba(255,255,255,0.10)"/>
+              <rect x="12" y="74" width="36" height="8" rx="2" fill="rgba(160,200,255,0.25)"/>
+              <rect x="12" y="92" width="36" height="8" rx="2" fill="rgba(255,255,255,0.06)"/>
+              <rect x="12" y="110" width="36" height="8" rx="2" fill="rgba(255,255,255,0.06)"/>
+              <rect x="12" y="128" width="36" height="8" rx="2" fill="rgba(255,255,255,0.06)"/>
+              <!-- Main content area -->
+              <!-- Stat cards row -->
+              <rect x="76" y="52" width="110" height="52" rx="4" fill="#181818" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+              <rect x="88" y="64" width="40" height="3" rx="1.5" fill="rgba(255,255,255,0.18)"/>
+              <rect x="88" y="74" width="60" height="8" rx="2" fill="rgba(255,255,255,0.30)"/>
+              <rect x="88" y="88" width="30" height="3" rx="1.5" fill="rgba(160,200,255,0.35)"/>
+
+              <rect x="198" y="52" width="110" height="52" rx="4" fill="#181818" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+              <rect x="210" y="64" width="40" height="3" rx="1.5" fill="rgba(255,255,255,0.18)"/>
+              <rect x="210" y="74" width="60" height="8" rx="2" fill="rgba(255,255,255,0.30)"/>
+              <rect x="210" y="88" width="45" height="3" rx="1.5" fill="rgba(160,200,255,0.25)"/>
+
+              <rect x="320" y="52" width="110" height="52" rx="4" fill="#181818" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+              <rect x="332" y="64" width="40" height="3" rx="1.5" fill="rgba(255,255,255,0.18)"/>
+              <rect x="332" y="74" width="60" height="8" rx="2" fill="rgba(255,255,255,0.30)"/>
+              <rect x="332" y="88" width="35" height="3" rx="1.5" fill="rgba(255,255,255,0.15)"/>
+
+              <!-- Table -->
+              <rect x="76" y="118" width="354" height="130" rx="4" fill="#161616" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <!-- Table header -->
+              <rect x="76" y="118" width="354" height="24" rx="4" fill="#1a1a1a"/>
+              <rect x="76" y="130" width="354" height="12" fill="#1a1a1a"/>
+              <rect x="92" y="125" width="50" height="3" rx="1.5" fill="rgba(255,255,255,0.20)"/>
+              <rect x="200" y="125" width="40" height="3" rx="1.5" fill="rgba(255,255,255,0.20)"/>
+              <rect x="320" y="125" width="50" height="3" rx="1.5" fill="rgba(255,255,255,0.20)"/>
+              <!-- Rows -->
+              <line x1="76" y1="142" x2="430" y2="142" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <rect x="92" y="149" width="70" height="3" rx="1.5" fill="rgba(255,255,255,0.15)"/>
+              <rect x="200" y="149" width="50" height="3" rx="1.5" fill="rgba(255,255,255,0.10)"/>
+              <rect x="320" y="147" width="40" height="7" rx="2" fill="rgba(160,200,255,0.20)"/>
+              <line x1="76" y1="162" x2="430" y2="162" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <rect x="92" y="169" width="55" height="3" rx="1.5" fill="rgba(255,255,255,0.15)"/>
+              <rect x="200" y="169" width="60" height="3" rx="1.5" fill="rgba(255,255,255,0.10)"/>
+              <rect x="320" y="167" width="40" height="7" rx="2" fill="rgba(255,255,255,0.07)"/>
+              <line x1="76" y1="182" x2="430" y2="182" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <rect x="92" y="189" width="80" height="3" rx="1.5" fill="rgba(255,255,255,0.15)"/>
+              <rect x="200" y="189" width="45" height="3" rx="1.5" fill="rgba(255,255,255,0.10)"/>
+              <rect x="320" y="187" width="40" height="7" rx="2" fill="rgba(160,200,255,0.15)"/>
+              <line x1="76" y1="202" x2="430" y2="202" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <rect x="92" y="209" width="65" height="3" rx="1.5" fill="rgba(255,255,255,0.15)"/>
+              <rect x="200" y="209" width="55" height="3" rx="1.5" fill="rgba(255,255,255,0.10)"/>
+              <rect x="320" y="207" width="40" height="7" rx="2" fill="rgba(255,255,255,0.07)"/>
+              <!-- Light blue glow -->
+              <ellipse cx="300" cy="140" rx="200" ry="100" fill="rgba(160,200,255,0.025)"/>
+            </svg>
+          </div>
+          <div class="work-body">
+            <div class="work-meta-row">
+              <div>
+                <div class="work-client">Undisclosed</div>
+                <div class="work-tagline">AI for critical systems.</div>
+              </div>
+              <div class="work-year-group">
+                <span class="work-badge">In progress</span>
+                <span class="work-year">2026</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="section">
+    <div class="wm" aria-hidden="true">About</div>
+    <div class="si">
+      <p class="sec-label" data-reveal>About</p>
+      <div class="about-layout">
+        <div class="about-prose" data-reveal>
+          <p>Specialized in motion design for AI and SaaS products.</p>
+          <p>I work with a small number of clients at a time - no agency overhead, no account managers. Just me and a brief we both believe in. My clients are founders and product teams who already know their product is good. The work is technical, precise, and a bit obsessive. I like it that way.</p>
+        </div>
+
+        <aside class="about-card" data-reveal="left">
+          <div class="card-row">
+            <span class="card-key">Based</span>
+            <span class="card-val">Stockholm</span>
+          </div>
+          <div class="card-row">
+            <span class="card-key">Status</span>
+            <span class="card-val card-val--available">Available</span>
+          </div>
+          <div class="card-row">
+            <span class="card-key">Booking</span>
+            <span class="card-val">Spring 2026</span>
+          </div>
+          <div class="card-row">
+            <span class="card-key">Reply within</span>
+            <span class="card-val">48 hours</span>
+          </div>
+          <div class="card-divider"></div>
+          <div class="card-chips-block">
+            <div class="card-chips-label">Stack</div>
+            <div class="chip-static-row">
+              <span class="chip-s">After Effects</span>
+              <span class="chip-s">Cinema 4D</span>
+              <span class="chip-s">Figma</span>
+              <span class="chip-s">DaVinci Resolve</span>
+            </div>
+          </div>
+          <div class="card-divider"></div>
+          <div class="card-chips-block">
+            <div class="card-chips-label">Best for</div>
+            <div class="chip-static-row">
+              <span class="chip-s">SaaS demos</span>
+              <span class="chip-s">Launch films</span>
+              <span class="chip-s">Social ads</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process" class="section">
+    <div class="wm" aria-hidden="true">Process</div>
+    <div class="si">
+      <div class="process-head" data-reveal>
+        <p class="sec-label">How it works</p>
+      </div>
+    </div>
+
+    <div class="process-showcase">
+
+      <!-- LEFT: sticky visual panel -->
+      <div class="process-visuals" id="process-visuals" aria-hidden="true">
+
+        <!-- Visual 01: Send the brief — brief form window -->
+        <div class="process-visual-item active" data-visual="0">
+          <svg viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <rect width="500" height="400" fill="#0b0b0e"/>
+            <!-- left ambient glow -->
+            <ellipse cx="-20" cy="200" rx="200" ry="220" fill="rgba(255,255,255,0.055)"/>
+            <!-- window -->
+            <rect x="20" y="20" width="460" height="360" rx="8" fill="#111116" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <!-- title bar -->
+            <rect x="20" y="20" width="460" height="40" rx="8" fill="#17171e"/>
+            <rect x="20" y="48" width="460" height="12" fill="#17171e"/>
+            <circle cx="40" cy="40" r="5" fill="rgba(255,255,255,0.10)"/>
+            <circle cx="56" cy="40" r="5" fill="rgba(255,255,255,0.10)"/>
+            <circle cx="72" cy="40" r="5" fill="rgba(255,255,255,0.10)"/>
+            <rect x="185" y="34" width="130" height="12" rx="3" fill="rgba(255,255,255,0.12)"/>
+            <rect x="452" y="32" width="18" height="16" rx="3" fill="rgba(255,255,255,0.06)"/>
+            <line x1="20" y1="60" x2="480" y2="60" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            <!-- field: PROJECT -->
+            <text x="40" y="88" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.22)" letter-spacing="2">PROJECT</text>
+            <rect x="40" y="96" width="420" height="30" rx="5" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
+            <rect x="52" y="107" width="200" height="8" rx="2" fill="rgba(255,255,255,0.38)"/>
+            <rect x="258" y="107" width="1.5" height="16" fill="rgba(255,255,255,0.70)" rx="1">
+              <animate attributeName="opacity" values="1;0;1" dur="1.1s" repeatCount="indefinite"/>
+            </rect>
+            <!-- field: FORMAT chips -->
+            <text x="40" y="148" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.22)" letter-spacing="2">FORMAT</text>
+            <rect x="40" y="156" width="60" height="22" rx="4" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+            <rect x="48" y="163" width="44" height="8" rx="2" fill="rgba(255,255,255,0.55)"/>
+            <rect x="108" y="156" width="76" height="22" rx="4" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <rect x="116" y="163" width="60" height="8" rx="2" fill="rgba(255,255,255,0.20)"/>
+            <rect x="192" y="156" width="58" height="22" rx="4" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <rect x="200" y="163" width="42" height="8" rx="2" fill="rgba(255,255,255,0.20)"/>
+            <!-- field: TIMELINE -->
+            <text x="40" y="203" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.22)" letter-spacing="2">TIMELINE</text>
+            <rect x="40" y="211" width="140" height="30" rx="5" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <rect x="52" y="222" width="80" height="8" rx="2" fill="rgba(255,255,255,0.26)"/>
+            <!-- field: REFERENCES -->
+            <text x="40" y="262" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.22)" letter-spacing="2">REFERENCES</text>
+            <rect x="40" y="268" width="6" height="8" rx="1" fill="rgba(255,255,255,0.35)"/>
+            <rect x="52" y="270" width="168" height="5" rx="1.5" fill="rgba(255,255,255,0.24)"/>
+            <rect x="226" y="270" width="52" height="5" rx="1.5" fill="rgba(255,255,255,0.09)"/>
+            <rect x="40" y="284" width="6" height="8" rx="1" fill="rgba(255,255,255,0.35)"/>
+            <rect x="52" y="286" width="140" height="5" rx="1.5" fill="rgba(255,255,255,0.24)"/>
+            <rect x="198" y="286" width="62" height="5" rx="1.5" fill="rgba(255,255,255,0.09)"/>
+            <!-- bottom bar -->
+            <line x1="20" y1="316" x2="480" y2="316" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            <rect x="20" y="316" width="460" height="64" rx="8" fill="#0f0f14"/>
+            <rect x="20" y="316" width="460" height="8" fill="#0f0f14"/>
+            <rect x="40" y="330" width="90" height="8" rx="2" fill="rgba(255,255,255,0.08)"/>
+            <!-- send button -->
+            <rect x="372" y="326" width="108" height="30" rx="5" fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+            <rect x="388" y="337" width="76" height="8" rx="2" fill="rgba(255,255,255,0.68)"/>
+            <!-- subtle scan line -->
+            <rect x="20" y="0" width="460" height="1.5" fill="rgba(255,255,255,0.05)" opacity="0.6">
+              <animateTransform attributeName="transform" type="translate" values="0,60;0,374;0,60" dur="7s" repeatCount="indefinite" calcMode="linear"/>
+            </rect>
+          </svg>
+        </div>
+
+        <!-- Visual 02: Direction & strategy — storyboard frames -->
+        <div class="process-visual-item" data-visual="1">
+          <svg viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <rect width="500" height="400" fill="#0c0c10"/>
+            <ellipse cx="520" cy="150" rx="220" ry="200" fill="rgba(255,255,255,0.04)"/>
+            <!-- header label -->
+            <text x="30" y="42" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.20)" letter-spacing="2">CREATIVE DIRECTION — v2</text>
+            <line x1="30" y1="52" x2="470" y2="52" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            <!-- frame 01: perspective lines -->
+            <rect x="30" y="64" width="198" height="138" rx="5" fill="#141418" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
+            <text x="40" y="81" font-family="'Courier New', monospace" font-size="7" fill="rgba(255,255,255,0.22)" letter-spacing="1">01 — OPENING</text>
+            <!-- vanishing-point lines -->
+            <line x1="129" y1="100" x2="40" y2="190" stroke="rgba(255,255,255,0.09)" stroke-width="0.8"/>
+            <line x1="129" y1="100" x2="218" y2="190" stroke="rgba(255,255,255,0.09)" stroke-width="0.8"/>
+            <line x1="129" y1="100" x2="40" y2="155" stroke="rgba(255,255,255,0.06)" stroke-width="0.6"/>
+            <line x1="129" y1="100" x2="218" y2="155" stroke="rgba(255,255,255,0.06)" stroke-width="0.6"/>
+            <line x1="129" y1="100" x2="129" y2="190" stroke="rgba(255,255,255,0.07)" stroke-width="0.7"/>
+            <circle cx="129" cy="100" r="3.5" fill="rgba(255,255,255,0.65)"/>
+            <circle cx="129" cy="100" r="9" fill="rgba(255,255,255,0.07)"/>
+            <!-- horizon -->
+            <line x1="40" y1="130" x2="218" y2="130" stroke="rgba(255,255,255,0.07)" stroke-width="0.8"/>
+            <!-- annotation -->
+            <line x1="158" y1="165" x2="200" y2="174" stroke="rgba(255,255,255,0.16)" stroke-width="0.8"/>
+            <rect x="200" y="168" width="22" height="12" rx="2" fill="rgba(255,255,255,0.08)"/>
+            <!-- arrow 01→02 -->
+            <line x1="228" y1="133" x2="268" y2="133" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>
+            <polygon points="268,129 276,133 268,137" fill="rgba(255,255,255,0.13)"/>
+            <!-- frame 02: circular reveal -->
+            <rect x="278" y="64" width="192" height="138" rx="5" fill="#141418" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
+            <text x="288" y="81" font-family="'Courier New', monospace" font-size="7" fill="rgba(255,255,255,0.22)" letter-spacing="1">02 — REVEAL</text>
+            <circle cx="374" cy="143" r="42" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <circle cx="374" cy="143" r="28" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <circle cx="374" cy="143" r="15" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.28)" stroke-width="1.5"/>
+            <line x1="374" y1="93" x2="374" y2="105" stroke="rgba(255,255,255,0.20)" stroke-width="1.5"/>
+            <line x1="374" y1="181" x2="374" y2="193" stroke="rgba(255,255,255,0.20)" stroke-width="1.5"/>
+            <line x1="324" y1="143" x2="336" y2="143" stroke="rgba(255,255,255,0.20)" stroke-width="1.5"/>
+            <line x1="412" y1="143" x2="424" y2="143" stroke="rgba(255,255,255,0.20)" stroke-width="1.5"/>
+            <!-- frame 01→03 arrow (vertical) -->
+            <line x1="129" y1="202" x2="129" y2="224" stroke="rgba(255,255,255,0.11)" stroke-width="1"/>
+            <polygon points="125,224 129,232 133,224" fill="rgba(255,255,255,0.11)"/>
+            <!-- frame 03: UI feature rows with motion arrow -->
+            <rect x="30" y="238" width="198" height="130" rx="5" fill="#141418" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
+            <text x="40" y="255" font-family="'Courier New', monospace" font-size="7" fill="rgba(255,255,255,0.22)" letter-spacing="1">03 — FEATURE DEMO</text>
+            <rect x="44" y="264" width="88" height="7" rx="2" fill="rgba(255,255,255,0.28)"/>
+            <rect x="44" y="277" width="148" height="4" rx="2" fill="rgba(255,255,255,0.10)"/>
+            <rect x="44" y="287" width="122" height="4" rx="2" fill="rgba(255,255,255,0.10)"/>
+            <rect x="44" y="297" width="138" height="4" rx="2" fill="rgba(255,255,255,0.10)"/>
+            <line x1="165" y1="275" x2="208" y2="275" stroke="rgba(255,255,255,0.22)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polygon points="208,271 216,275 208,279" fill="rgba(255,255,255,0.22)"/>
+            <line x1="176" y1="254" x2="176" y2="356" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="3,4"/>
+            <!-- arrow 03→04 -->
+            <line x1="228" y1="303" x2="268" y2="303" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>
+            <polygon points="268,299 276,303 268,307" fill="rgba(255,255,255,0.13)"/>
+            <!-- frame 04: CTA typography -->
+            <rect x="278" y="238" width="192" height="130" rx="5" fill="#141418" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
+            <text x="288" y="255" font-family="'Courier New', monospace" font-size="7" fill="rgba(255,255,255,0.22)" letter-spacing="1">04 — CTA</text>
+            <rect x="296" y="264" width="130" height="16" rx="2" fill="rgba(255,255,255,0.38)"/>
+            <rect x="296" y="286" width="90" height="8" rx="2" fill="rgba(255,255,255,0.14)"/>
+            <rect x="296" y="300" width="110" height="8" rx="2" fill="rgba(255,255,255,0.14)"/>
+            <rect x="296" y="318" width="62" height="18" rx="4" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.24)" stroke-width="1"/>
+            <rect x="304" y="324" width="46" height="6" rx="1.5" fill="rgba(255,255,255,0.40)"/>
+            <!-- palette row -->
+            <line x1="30" y1="380" x2="470" y2="380" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <text x="30" y="393" font-family="'Courier New', monospace" font-size="7" fill="rgba(255,255,255,0.16)" letter-spacing="1.5">PALETTE</text>
+            <circle cx="98" cy="393" r="6" fill="rgba(255,255,255,0.88)"/>
+            <circle cx="116" cy="393" r="6" fill="rgba(200,200,210,0.48)"/>
+            <circle cx="134" cy="393" r="6" fill="rgba(255,255,255,0.14)"/>
+            <circle cx="152" cy="393" r="6" fill="rgba(255,255,255,0.05)"/>
+            <text x="170" y="397" font-family="'Courier New', monospace" font-size="7" fill="rgba(255,255,255,0.16)" letter-spacing="1">MONOCHROME</text>
+          </svg>
+        </div>
+
+        <!-- Visual 03: Production — AE-style timeline -->
+        <div class="process-visual-item" data-visual="2">
+          <svg viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <rect width="500" height="400" fill="#090910"/>
+            <!-- preview window (top 54%) -->
+            <rect x="0" y="0" width="500" height="218" fill="#0e0e14"/>
+            <rect x="14" y="14" width="472" height="196" rx="4" fill="#07070e" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <!-- motion frame content: concentric rings -->
+            <ellipse cx="250" cy="111" rx="190" ry="95" fill="rgba(255,255,255,0.025)"/>
+            <circle cx="250" cy="111" r="66" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="1"/>
+            <circle cx="250" cy="111" r="44" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>
+            <circle cx="250" cy="111" r="24" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.32)" stroke-width="1.5"/>
+            <!-- motion blur streaks -->
+            <rect x="40" y="107" width="90" height="8" rx="4" fill="rgba(255,255,255,0.04)" opacity="0.8"/>
+            <rect x="40" y="107" width="60" height="8" rx="4" fill="rgba(255,255,255,0.04)" opacity="0.6"/>
+            <rect x="370" y="107" width="86" height="8" rx="4" fill="rgba(255,255,255,0.04)" opacity="0.8"/>
+            <!-- crosshair -->
+            <line x1="250" y1="70" x2="250" y2="88" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+            <line x1="250" y1="134" x2="250" y2="152" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+            <line x1="208" y1="111" x2="226" y2="111" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+            <line x1="274" y1="111" x2="292" y2="111" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+            <!-- timecode overlay -->
+            <rect x="14" y="186" width="96" height="24" rx="2" fill="rgba(0,0,0,0.55)"/>
+            <rect x="22" y="192" width="80" height="12" rx="2" fill="rgba(255,255,255,0.22)"/>
+            <!-- playback scrub bar -->
+            <rect x="14" y="198" width="472" height="12" rx="0" fill="rgba(255,255,255,0.04)"/>
+            <rect x="14" y="198" width="230" height="12" rx="0" fill="rgba(255,255,255,0.14)"/>
+            <circle cx="244" cy="204" r="6" fill="rgba(255,255,255,0.80)" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
+            <!-- timeline area -->
+            <rect x="0" y="218" width="500" height="182" fill="#0c0c12"/>
+            <line x1="0" y1="218" x2="500" y2="218" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
+            <!-- layer name column -->
+            <rect x="0" y="218" width="92" height="182" fill="#0f0f16"/>
+            <line x1="92" y1="218" x2="92" y2="400" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <!-- time ruler -->
+            <rect x="92" y="218" width="408" height="22" fill="#131320"/>
+            <line x1="92" y1="240" x2="500" y2="240" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            <line x1="132" y1="234" x2="132" y2="240" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+            <line x1="172" y1="230" x2="172" y2="240" stroke="rgba(255,255,255,0.20)" stroke-width="1"/>
+            <line x1="212" y1="234" x2="212" y2="240" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+            <line x1="252" y1="230" x2="252" y2="240" stroke="rgba(255,255,255,0.20)" stroke-width="1"/>
+            <line x1="292" y1="234" x2="292" y2="240" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+            <line x1="332" y1="230" x2="332" y2="240" stroke="rgba(255,255,255,0.20)" stroke-width="1"/>
+            <line x1="372" y1="234" x2="372" y2="240" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+            <line x1="412" y1="230" x2="412" y2="240" stroke="rgba(255,255,255,0.20)" stroke-width="1"/>
+            <line x1="452" y1="234" x2="452" y2="240" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+            <!-- layer 1 -->
+            <line x1="0" y1="268" x2="500" y2="268" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <rect x="8" y="249" width="56" height="8" rx="2" fill="rgba(255,255,255,0.18)"/>
+            <rect x="96" y="246" width="290" height="18" rx="2" fill="rgba(255,255,255,0.11)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            <!-- layer 2 -->
+            <line x1="0" y1="296" x2="500" y2="296" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <rect x="8" y="277" width="68" height="8" rx="2" fill="rgba(255,255,255,0.12)"/>
+            <rect x="96" y="274" width="175" height="18" rx="2" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <!-- layer 3: keyframes -->
+            <line x1="0" y1="324" x2="500" y2="324" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <rect x="8" y="305" width="46" height="8" rx="2" fill="rgba(255,255,255,0.12)"/>
+            <polygon points="144,314 149,308 154,314 149,320" fill="rgba(255,255,255,0.52)"/>
+            <polygon points="214,314 219,308 224,314 219,320" fill="rgba(255,255,255,0.52)"/>
+            <polygon points="284,314 289,308 294,314 289,320" fill="rgba(255,255,255,0.52)"/>
+            <polygon points="354,314 359,308 364,314 359,320" fill="rgba(255,255,255,0.52)"/>
+            <line x1="154" y1="314" x2="214" y2="314" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>
+            <line x1="224" y1="314" x2="284" y2="314" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>
+            <line x1="294" y1="314" x2="354" y2="314" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>
+            <!-- layer 4: audio waveform -->
+            <line x1="0" y1="352" x2="500" y2="352" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <rect x="8" y="333" width="40" height="8" rx="2" fill="rgba(255,255,255,0.12)"/>
+            <!-- waveform bars -->
+            <rect x="98"  y="332" width="2" height="10" rx="1" fill="rgba(255,255,255,0.15)"/>
+            <rect x="102" y="329" width="2" height="16" rx="1" fill="rgba(255,255,255,0.21)"/>
+            <rect x="106" y="330" width="2" height="14" rx="1" fill="rgba(255,255,255,0.18)"/>
+            <rect x="110" y="334" width="2" height="6"  rx="1" fill="rgba(255,255,255,0.11)"/>
+            <rect x="114" y="327" width="2" height="20" rx="1" fill="rgba(255,255,255,0.24)"/>
+            <rect x="118" y="331" width="2" height="12" rx="1" fill="rgba(255,255,255,0.16)"/>
+            <rect x="122" y="328" width="2" height="18" rx="1" fill="rgba(255,255,255,0.22)"/>
+            <rect x="126" y="330" width="2" height="14" rx="1" fill="rgba(255,255,255,0.18)"/>
+            <rect x="130" y="333" width="2" height="8"  rx="1" fill="rgba(255,255,255,0.13)"/>
+            <rect x="134" y="326" width="2" height="22" rx="1" fill="rgba(255,255,255,0.26)"/>
+            <rect x="138" y="329" width="2" height="16" rx="1" fill="rgba(255,255,255,0.20)"/>
+            <rect x="142" y="331" width="2" height="12" rx="1" fill="rgba(255,255,255,0.16)"/>
+            <rect x="146" y="327" width="2" height="20" rx="1" fill="rgba(255,255,255,0.23)"/>
+            <rect x="150" y="330" width="2" height="14" rx="1" fill="rgba(255,255,255,0.18)"/>
+            <rect x="154" y="328" width="2" height="18" rx="1" fill="rgba(255,255,255,0.21)"/>
+            <rect x="158" y="333" width="2" height="8"  rx="1" fill="rgba(255,255,255,0.12)"/>
+            <rect x="162" y="329" width="2" height="16" rx="1" fill="rgba(255,255,255,0.20)"/>
+            <rect x="166" y="326" width="2" height="22" rx="1" fill="rgba(255,255,255,0.25)"/>
+            <rect x="170" y="330" width="2" height="14" rx="1" fill="rgba(255,255,255,0.17)"/>
+            <rect x="174" y="328" width="2" height="18" rx="1" fill="rgba(255,255,255,0.22)"/>
+            <rect x="178" y="332" width="2" height="10" rx="1" fill="rgba(255,255,255,0.15)"/>
+            <rect x="182" y="327" width="2" height="20" rx="1" fill="rgba(255,255,255,0.23)"/>
+            <rect x="186" y="330" width="2" height="14" rx="1" fill="rgba(255,255,255,0.18)"/>
+            <rect x="190" y="328" width="2" height="18" rx="1" fill="rgba(255,255,255,0.21)"/>
+            <!-- layer 5 -->
+            <rect x="8" y="361" width="36" height="8" rx="2" fill="rgba(255,255,255,0.12)"/>
+            <rect x="96" y="358" width="78" height="18" rx="2" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <!-- PLAYHEAD -->
+            <line x1="252" y1="218" x2="252" y2="400" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+            <polygon points="246,218 258,218 252,229" fill="rgba(255,255,255,0.75)"/>
+          </svg>
+        </div>
+
+        <!-- Visual 04: Final delivery — export complete -->
+        <div class="process-visual-item" data-visual="3">
+          <svg viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <rect width="500" height="400" fill="#0a0a0e"/>
+            <!-- center glow -->
+            <ellipse cx="250" cy="200" rx="240" ry="200" fill="rgba(255,255,255,0.025)"/>
+            <ellipse cx="250" cy="200" rx="130" ry="130" fill="rgba(255,255,255,0.025)"/>
+            <!-- top nav bar -->
+            <rect x="0" y="0" width="500" height="52" fill="#0f0f16"/>
+            <line x1="0" y1="52" x2="500" y2="52" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <rect x="18" y="17" width="30" height="18" rx="3" fill="rgba(255,255,255,0.06)"/>
+            <rect x="24" y="24" width="18" height="5" rx="1" fill="rgba(255,255,255,0.20)"/>
+            <rect x="188" y="19" width="124" height="14" rx="3" fill="rgba(255,255,255,0.10)"/>
+            <circle cx="462" cy="26" r="6" fill="rgba(255,255,255,0.08)"/>
+            <circle cx="462" cy="26" r="3" fill="rgba(255,255,255,0.55)"/>
+            <!-- delivered badge -->
+            <rect x="148" y="68" width="204" height="80" rx="8" fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
+            <!-- check circle -->
+            <circle cx="192" cy="108" r="20" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
+            <polyline points="183,108 189,115 202,100" stroke="rgba(255,255,255,0.82)" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- text -->
+            <rect x="224" y="99" width="86" height="12" rx="3" fill="rgba(255,255,255,0.42)"/>
+            <rect x="224" y="117" width="62" height="8" rx="2" fill="rgba(255,255,255,0.14)"/>
+            <!-- divider -->
+            <line x1="30" y1="164" x2="470" y2="164" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <!-- files label -->
+            <text x="30" y="180" font-family="'Courier New', monospace" font-size="8" fill="rgba(255,255,255,0.20)" letter-spacing="2">DELIVERABLES</text>
+            <!-- file row 1 -->
+            <rect x="30" y="188" width="440" height="38" rx="5" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <rect x="44" y="201" width="10" height="12" rx="1" fill="rgba(255,255,255,0.32)"/>
+            <rect x="62" y="203" width="172" height="7" rx="2" fill="rgba(255,255,255,0.28)"/>
+            <rect x="242" y="203" width="52" height="7" rx="2" fill="rgba(255,255,255,0.09)"/>
+            <circle cx="446" cy="207" r="9" fill="rgba(255,255,255,0.07)"/>
+            <polyline points="441,207 444,210 451,203" stroke="rgba(255,255,255,0.62)" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- file row 2 -->
+            <rect x="30" y="234" width="440" height="38" rx="5" fill="rgba(255,255,255,0.028)" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <rect x="44" y="247" width="10" height="12" rx="1" fill="rgba(255,255,255,0.22)"/>
+            <rect x="62" y="249" width="146" height="7" rx="2" fill="rgba(255,255,255,0.22)"/>
+            <rect x="216" y="249" width="64" height="7" rx="2" fill="rgba(255,255,255,0.07)"/>
+            <circle cx="446" cy="253" r="9" fill="rgba(255,255,255,0.07)"/>
+            <polyline points="441,253 444,256 451,249" stroke="rgba(255,255,255,0.62)" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- file row 3 -->
+            <rect x="30" y="280" width="440" height="38" rx="5" fill="rgba(255,255,255,0.028)" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <rect x="44" y="293" width="10" height="12" rx="1" fill="rgba(255,255,255,0.22)"/>
+            <rect x="62" y="295" width="188" height="7" rx="2" fill="rgba(255,255,255,0.22)"/>
+            <rect x="258" y="295" width="40" height="7" rx="2" fill="rgba(255,255,255,0.07)"/>
+            <circle cx="446" cy="299" r="9" fill="rgba(255,255,255,0.07)"/>
+            <polyline points="441,299 444,302 451,295" stroke="rgba(255,255,255,0.62)" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- format badges -->
+            <line x1="30" y1="332" x2="470" y2="332" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <text x="30" y="348" font-family="'Courier New', monospace" font-size="7" fill="rgba(255,255,255,0.16)" letter-spacing="1.5">FORMAT</text>
+            <rect x="80" y="339" width="48" height="16" rx="3" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
+            <rect x="86" y="343" width="36" height="7" rx="1.5" fill="rgba(255,255,255,0.24)"/>
+            <rect x="136" y="339" width="64" height="16" rx="3" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
+            <rect x="142" y="343" width="52" height="7" rx="1.5" fill="rgba(255,255,255,0.24)"/>
+            <rect x="208" y="339" width="32" height="16" rx="3" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
+            <rect x="214" y="343" width="20" height="7" rx="1.5" fill="rgba(255,255,255,0.24)"/>
+            <rect x="248" y="339" width="58" height="16" rx="3" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
+            <rect x="254" y="343" width="46" height="7" rx="1.5" fill="rgba(255,255,255,0.24)"/>
+            <!-- download button -->
+            <rect x="352" y="337" width="118" height="28" rx="5" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+            <rect x="368" y="348" width="86" height="7" rx="2" fill="rgba(255,255,255,0.58)"/>
+            <!-- full progress bar at bottom -->
+            <rect x="0" y="394" width="500" height="4" fill="rgba(255,255,255,0.04)"/>
+            <rect x="0" y="394" width="500" height="4" fill="rgba(255,255,255,0.22)"/>
+          </svg>
+        </div>
+
+      </div><!-- /process-visuals -->
+
+      <!-- RIGHT: step list -->
+      <div class="process-steps-list">
+
+        <div class="process-step-item active" data-step="0">
+          <div class="psi-num">01</div>
+          <h3 class="psi-title">Send the brief</h3>
+          <div class="psi-timing">Day 0</div>
+          <p class="psi-desc">Drop everything into a doc — references, goals, what exists, what's missing. The more context the better.</p>
+        </div>
+
+        <div class="process-step-item" data-step="1">
+          <div class="psi-num">02</div>
+          <h3 class="psi-title">Direction &amp; strategy</h3>
+          <div class="psi-timing">Day 1–3</div>
+          <p class="psi-desc">I review, ask questions, and send back a clear creative direction. One short sync before anything gets made.</p>
+        </div>
+
+        <div class="process-step-item" data-step="2">
+          <div class="psi-num">03</div>
+          <h3 class="psi-title">Production</h3>
+          <div class="psi-timing">Week 1–2</div>
+          <p class="psi-desc">Heads down. You'll see a work-in-progress cut before final delivery — no surprises at the end.</p>
+        </div>
+
+        <div class="process-step-item" data-step="3">
+          <div class="psi-num">04</div>
+          <h3 class="psi-title">Refined and delivered</h3>
+          <div class="psi-timing">Week 2–3</div>
+          <p class="psi-desc">Two revision rounds included. Final files in every format you need, ready to publish the same day.</p>
+        </div>
+
+      </div><!-- /process-steps-list -->
+
+    </div><!-- /process-showcase -->
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section">
+    <div class="wm" aria-hidden="true">Contact</div>
+    <div class="si">
+      <div class="contact-head" data-reveal>
+        <h2 class="contact-h2">Tell me what you're building.</h2>
+        <p class="contact-sub">Fill in as much or as little as you have. I'll get back within 48 hours.</p>
+      </div>
+
+      <form class="contact-form" action="mailto:mail@alfredgustafsson.se" method="post" enctype="text/plain" novalidate>
+
+        <!-- Section 1: About you -->
+        <div class="form-section" data-reveal>
+          <div class="form-section-head">
+            <span class="form-num">01</span>
+            <span class="form-sec-title">About you</span>
+          </div>
+          <div class="form-row">
+            <label class="form-field">
+              <span>Name <span class="req">*</span></span>
+              <input type="text" name="name" placeholder="Your name" required autocomplete="name" />
+            </label>
+            <label class="form-field">
+              <span>Company</span>
+              <input type="text" name="company" placeholder="Where you work" autocomplete="organization" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label class="form-field">
+              <span>Email <span class="req">*</span></span>
+              <input type="email" name="email" placeholder="you@company.com" required autocomplete="email" />
+            </label>
+            <label class="form-field">
+              <span>Website</span>
+              <input type="url" name="website" placeholder="https://" autocomplete="url" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Section 2: The project -->
+        <div class="form-section" data-reveal>
+          <div class="form-section-head">
+            <span class="form-num">02</span>
+            <span class="form-sec-title">The project</span>
+          </div>
+          <div class="form-row">
+            <label class="form-field">
+              <span>Length</span>
+              <select name="length">
+                <option value="" disabled selected>Select length</option>
+                <option>Under 30 seconds</option>
+                <option>30–60 seconds</option>
+                <option>60–90 seconds</option>
+                <option>90 seconds+</option>
+                <option>Not sure yet</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span>Timeline</span>
+              <select name="timeline">
+                <option value="" disabled selected>Select timeline</option>
+                <option>ASAP (rush)</option>
+                <option>2–3 weeks</option>
+                <option>1 month</option>
+                <option>Flexible</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-field">
+            <span>Budget</span>
+            <select name="budget">
+              <option value="" disabled selected>Select budget range</option>
+              <option>Under €2,000</option>
+              <option>€2,000 – €5,000</option>
+              <option>€5,000 – €10,000</option>
+              <option>€10,000+</option>
+              <option>Let's discuss</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <span>Vibe</span>
+            <div class="chip-select" role="group" aria-label="Select vibe">
+              <label class="chip-opt"><input type="checkbox" name="vibe" value="clean" /><span>Clean &amp; minimal</span></label>
+              <label class="chip-opt"><input type="checkbox" name="vibe" value="energetic" /><span>Energetic</span></label>
+              <label class="chip-opt"><input type="checkbox" name="vibe" value="techy" /><span>Techy</span></label>
+              <label class="chip-opt"><input type="checkbox" name="vibe" value="cinematic" /><span>Cinematic</span></label>
+              <label class="chip-opt"><input type="checkbox" name="vibe" value="playful" /><span>Playful</span></label>
+              <label class="chip-opt"><input type="checkbox" name="vibe" value="bold" /><span>Bold</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: What you already have -->
+        <div class="form-section" data-reveal>
+          <div class="form-section-head">
+            <span class="form-num">03</span>
+            <span class="form-sec-title">What you already have</span>
+          </div>
+          <div class="form-field">
+            <div class="chip-select" role="group" aria-label="Assets you have">
+              <label class="chip-opt"><input type="checkbox" name="assets" value="script" /><span>Script</span></label>
+              <label class="chip-opt"><input type="checkbox" name="assets" value="voiceover" /><span>Voiceover</span></label>
+              <label class="chip-opt"><input type="checkbox" name="assets" value="brand" /><span>Brand guidelines</span></label>
+              <label class="chip-opt"><input type="checkbox" name="assets" value="figma" /><span>Figma files</span></label>
+              <label class="chip-opt"><input type="checkbox" name="assets" value="screens" /><span>UI screens</span></label>
+              <label class="chip-opt"><input type="checkbox" name="assets" value="logo" /><span>Logo</span></label>
+              <label class="chip-opt"><input type="checkbox" name="assets" value="nothing" /><span>Nothing yet</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Tell me more -->
+        <div class="form-section" data-reveal>
+          <div class="form-section-head">
+            <span class="form-num">04</span>
+            <span class="form-sec-title">Tell me more</span>
+          </div>
+          <label class="form-field">
+            <span>Description <span class="req">*</span></span>
+            <textarea name="description" placeholder="What are you making? Who is it for? What should people feel when they see it?" required></textarea>
+          </label>
+          <label class="form-field">
+            <span>Reference video URL</span>
+            <input type="url" name="reference" placeholder="https://vimeo.com/..." />
+          </label>
+        </div>
+
+        <p class="form-legal" data-reveal>
+          I understand every submission is reviewed and discussed before any work begins. Sending this form is not a commitment on either side — just the start of a conversation.
+        </p>
+
+        <button type="submit" class="btn-submit" data-reveal>Send it over</button>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-wm" aria-hidden="true">Alfred</div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2026 Alfred Gustafsson &nbsp;·&nbsp; Stockholm</span>
+        <div class="footer-links">
+          <!-- X (Twitter) -->
+          <a href="https://x.com/overshoot" aria-label="X (Twitter)" rel="noopener noreferrer" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M12.6 1.5h2.3L9.9 7.1 15.5 14.5h-4.1l-3.5-4.6-4 4.6H1.6l5.3-6.1L1 1.5h4.2l3.2 4.2 3.2-4.2zm-.8 11.7h1.3L4.2 2.8H2.8l9 10.4z" fill="currentColor"/>
+            </svg>
+          </a>
+          <!-- TikTok -->
+          <a href="https://tiktok.com/@overshoot" aria-label="TikTok" rel="noopener noreferrer" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M11.3 1c.2 1 .7 1.9 1.5 2.5.7.5 1.5.8 2.2.8v2.2c-1.2 0-2.3-.4-3.2-1v4.5c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4c.2 0 .4 0 .6.1V8.3c-.2 0-.4-.1-.6-.1-1 0-1.8.8-1.8 1.8s.8 1.8 1.8 1.8 1.8-.8 1.8-1.8V1h1.7z" fill="currentColor"/>
+            </svg>
+          </a>
+          <!-- Email -->
+          <a href="mailto:mail@alfredgustafsson.se" aria-label="Email">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M1.5 5L8 9.5 14.5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* Mobile nav */
+    const navToggle = document.getElementById('nav-toggle');
+    const navMobile = document.getElementById('nav-mobile');
+    if (navToggle && navMobile) {
+      navToggle.addEventListener('click', () => {
+        const open = navMobile.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(open));
+        navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      });
+      navMobile.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+          navMobile.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+          navToggle.setAttribute('aria-label', 'Open menu');
+        });
+      });
+    }
+
+    /* Nav scroll + scroll indicator */
+    const nav = document.getElementById('nav');
+    const scrollIndicator = document.querySelector('.scroll-indicator');
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      nav.classList.toggle('scrolled', y > 40);
+      if (scrollIndicator) scrollIndicator.style.opacity = y > 100 ? '0' : '1';
+      updateWorkCards();
+    }, { passive: true });
+
+    /* Work card depth scale */
+    const stackCards = Array.from(document.querySelectorAll('.work-stack-card'));
+    function updateWorkCards() {
+      if (!stackCards.length) return;
+      stackCards.forEach((card, i) => {
+        const next = stackCards[i + 1];
+        if (!next) { card.style.transform = ''; return; }
+        const cardRect = card.getBoundingClientRect();
+        const nextRect = next.getBoundingClientRect();
+        const overlap = cardRect.bottom - nextRect.top;
+        if (overlap > 0) {
+          const progress = Math.min(1, overlap / 300);
+          card.style.transform = `scale(${(1 - 0.03 * progress).toFixed(4)})`;
+        } else {
+          card.style.transform = '';
+        }
+      });
+    }
+
+    /* Custom cursor */
+    const cursor = document.getElementById('cursor');
+    if (window.matchMedia('(pointer: fine)').matches) {
+      let mx = -200, my = -200, cx = -200, cy = -200;
+      document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+      (function tick() {
+        cx += (mx - cx) * 0.08;
+        cy += (my - cy) * 0.08;
+        cursor.style.left = cx + 'px';
+        cursor.style.top = cy + 'px';
+        requestAnimationFrame(tick);
+      })();
+      document.querySelectorAll('a, button, .chip-opt, .work-stack-card, select').forEach(el => {
+        el.addEventListener('mouseenter', () => cursor.classList.add('large'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('large'));
+      });
+    }
+
+    /* Scroll reveals */
+    document.body.classList.add('js-ready');
+    document.querySelectorAll('.process-step').forEach((el, i) => {
+      el.style.transitionDelay = (i * 80) + 'ms';
+    });
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          revealObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('[data-reveal], .wm').forEach(el => revealObs.observe(el));
+
+    /* ── Hero particle canvas (cinematic upgrade) ── */
+    (function () {
+      const canvas = document.getElementById('hero-canvas');
+      const heroEl = document.getElementById('hero');
+      if (!canvas || !heroEl) return;
+      const ctx = canvas.getContext('2d');
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* Config */
+      const COUNT       = 110;   /* fewer but richer */
+      const CONNECT_D   = 130;
+      const REPEL_D     = 160;
+      const MAX_ALPHA   = 0.12;  /* connections */
+      const PULSE_CYCLE = 5200;  /* ms per pulse wave */
+
+      let W, H, pts = [], mX = -9999, mY = -9999, t = 0;
+
+      function resize() {
+        W = canvas.width  = heroEl.offsetWidth;
+        H = canvas.height = heroEl.offsetHeight;
+      }
+
+      function mkPt() {
+        const angle = Math.random() * Math.PI * 2;
+        const spd   = 0.12 + Math.random() * 0.22;  /* slower, more organic */
+        return {
+          x:   Math.random() * W,
+          y:   Math.random() * H,
+          vx:  Math.cos(angle) * spd,
+          vy:  Math.sin(angle) * spd,
+          r:   0.9 + Math.random() * 0.7,
+          a:   0.35 + Math.random() * 0.30,   /* varied brightness */
+          phase: Math.random() * Math.PI * 2,  /* individual twinkle phase */
+          layer: Math.random() < 0.25 ? 0 : 1  /* 0=far(slow), 1=near(normal) */
+        };
+      }
+
+      function draw(now) {
+        ctx.clearRect(0, 0, W, H);
+
+        /* pulse wave: expands from center every PULSE_CYCLE ms */
+        const pulse  = (now % PULSE_CYCLE) / PULSE_CYCLE;   /* 0→1 */
+        const pRad   = pulse * Math.max(W, H) * 1.2;
+        const pAlpha = Math.max(0, 0.06 * (1 - pulse) * (1 - pulse));
+
+        /* draw connection lines */
+        for (let i = 0; i < pts.length - 1; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const dx = pts[i].x - pts[j].x;
+            const dy = pts[i].y - pts[j].y;
+            const d  = Math.sqrt(dx * dx + dy * dy);
+            if (d < CONNECT_D) {
+              const fade = 1 - d / CONNECT_D;
+              /* boost lines near the pulse wave ring */
+              const dFromWave = Math.abs(d - pRad);
+              const waveBoost = dFromWave < 60 ? (1 - dFromWave / 60) * 0.06 : 0;
+              const alpha = MAX_ALPHA * fade * fade + waveBoost;
+              ctx.beginPath();
+              ctx.moveTo(pts[i].x, pts[i].y);
+              ctx.lineTo(pts[j].x, pts[j].y);
+              ctx.strokeStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
+              ctx.lineWidth = 0.45;
+              ctx.stroke();
+            }
+          }
+        }
+
+        /* draw particles with subtle twinkle */
+        for (const p of pts) {
+          const twinkle = 0.85 + 0.15 * Math.sin(now * 0.0008 + p.phase);
+          const a = p.a * twinkle;
+          /* soft glow halo on brighter particles */
+          if (a > 0.55) {
+            const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 3.5);
+            g.addColorStop(0, `rgba(255,255,255,${(a * 0.28).toFixed(3)})`);
+            g.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r * 3.5, 0, Math.PI * 2);
+            ctx.fillStyle = g;
+            ctx.fill();
+          }
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${a.toFixed(3)})`;
+          ctx.fill();
+        }
+
+        /* soft expanding pulse ring */
+        if (pAlpha > 0.002) {
+          ctx.beginPath();
+          ctx.arc(W * 0.62, H * 0.38, pRad, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(255,255,255,${pAlpha.toFixed(4)})`;
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+      }
+
+      function step() {
+        for (const p of pts) {
+          /* mouse repulsion */
+          const dx = p.x - mX, dy = p.y - mY;
+          const d  = Math.sqrt(dx * dx + dy * dy);
+          if (d < REPEL_D && d > 1) {
+            const f = ((REPEL_D - d) / REPEL_D) * 0.5;
+            p.vx += (dx / d) * f;
+            p.vy += (dy / d) * f;
+          }
+          /* layer-based speed multiplier — far layer moves 40% as fast */
+          const spd_mul = p.layer === 0 ? 0.4 : 1;
+          /* damping */
+          p.vx *= 0.975;
+          p.vy *= 0.975;
+          /* speed cap */
+          const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+          const cap = p.layer === 0 ? 0.7 : 1.6;
+          if (spd > cap) { p.vx = p.vx / spd * cap; p.vy = p.vy / spd * cap; }
+          p.x += p.vx * spd_mul;
+          p.y += p.vy * spd_mul;
+          /* wrap */
+          if (p.x < -6) p.x = W + 6; else if (p.x > W + 6) p.x = -6;
+          if (p.y < -6) p.y = H + 6; else if (p.y > H + 6) p.y = -6;
+        }
+      }
+
+      function tick(now) { step(); draw(now); requestAnimationFrame(tick); }
+
+      resize();
+      pts = Array.from({ length: COUNT }, mkPt);
+
+      if (reduced) {
+        draw(0);
+      } else {
+        requestAnimationFrame(tick);
+      }
+
+      window.addEventListener('resize', () => { resize(); if (reduced) draw(0); }, { passive: true });
+      heroEl.addEventListener('mousemove', e => {
+        const r = canvas.getBoundingClientRect();
+        mX = e.clientX - r.left;
+        mY = e.clientY - r.top;
+      }, { passive: true });
+      heroEl.addEventListener('mouseleave', () => { mX = -9999; mY = -9999; });
+    })();
+
+    /* ── Hero glow orbs — layered parallax ── */
+    (function () {
+      const glowTR  = document.querySelector('.hero-glow-tr');
+      const glowBL  = document.querySelector('.hero-glow-bl');
+      const glowH1  = document.querySelector('.hero-glow-h1');
+      const heroEl  = document.getElementById('hero');
+      if (!glowTR || !glowBL || !heroEl) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      let tX = 0, tY = 0;
+      /* per-layer lerp state */
+      let tr = {x:0,y:0}, bl = {x:0,y:0}, h1 = {x:0,y:0};
+
+      document.addEventListener('mousemove', e => {
+        const rect = heroEl.getBoundingClientRect();
+        if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+          tX = (e.clientX - rect.left  - rect.width  * 0.5) / rect.width;
+          tY = (e.clientY - rect.top   - rect.height * 0.5) / rect.height;
+        }
+      }, { passive: true });
+
+      (function glowTick() {
+        /* TR — largest, slowest, travels most */
+        tr.x += (tX - tr.x) * 0.04;
+        tr.y += (tY - tr.y) * 0.04;
+        /* BL — medium */
+        bl.x += (tX - bl.x) * 0.055;
+        bl.y += (tY - bl.y) * 0.055;
+        /* H1 bloom — fastest, smallest travel */
+        if (glowH1) {
+          h1.x += (tX - h1.x) * 0.07;
+          h1.y += (tY - h1.y) * 0.07;
+          glowH1.style.transform = `translate(${(h1.x * 30).toFixed(1)}px,${(h1.y * 22).toFixed(1)}px)`;
+        }
+        glowTR.style.transform = `translate(${(tr.x * 90).toFixed(1)}px,${(tr.y * 70).toFixed(1)}px)`;
+        glowBL.style.transform = `translate(${(bl.x * 55).toFixed(1)}px,${(bl.y * 45).toFixed(1)}px)`;
+        requestAnimationFrame(glowTick);
+      })();
+    })();
+
+    /* ── Process step → visual switcher ── */
+    (function () {
+      const steps   = document.querySelectorAll('.process-step-item');
+      const visuals = document.querySelectorAll('.process-visual-item');
+      if (!steps.length || !visuals.length) return;
+
+      function activate(idx) {
+        steps.forEach(s => s.classList.remove('active'));
+        visuals.forEach(v => v.classList.remove('active'));
+        if (steps[idx])   steps[idx].classList.add('active');
+        if (visuals[idx]) visuals[idx].classList.add('active');
+      }
+
+      /* On mobile the panel is static — skip the observer */
+      const mq = window.matchMedia('(max-width: 860px)');
+      if (mq.matches) return;
+
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) activate(Number(e.target.dataset.step));
+        });
+      }, { threshold: 0.5, rootMargin: '-10% 0px -40% 0px' });
+
+      steps.forEach(s => obs.observe(s));
+
+      /* Re-evaluate on resize */
+      mq.addEventListener('change', () => {
+        if (mq.matches) { obs.disconnect(); steps.forEach(s => s.classList.add('active')); }
+        else            { steps.forEach(s => obs.observe(s)); }
+      });
+    })();
+  </script>
+</body>
+</html>
