@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>history.scrollRestoration = 'manual'; window.scrollTo(0, 0);</script>
   <style>
     /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -288,17 +289,26 @@
     .hero-ctas[data-hero-anim]   { --dur: .6s; transform: translateY(14px); }
     @keyframes heroIn { to { opacity: 1; transform: none; } }
 
-    /* Word-by-word blur-in — cinematic staggered entrance */
-    .word-in {
+    /* Word-by-word blur-in — two-tier: dramatic for headline, light sweep for body */
+    .word-in, .sub-word-in {
       display: inline-block;
       opacity: 0;
-      animation: wordIn .72s var(--ease-out) forwards;
       will-change: opacity, filter, transform;
     }
+    .word-in {
+      animation: wordIn .78s var(--ease-out) forwards;
+    }
+    .sub-word-in {
+      animation: subWordIn .42s var(--ease-out) forwards;
+    }
     @keyframes wordIn {
-      0%   { opacity: 0; filter: blur(10px); transform: translateY(8px); }
-      55%  { filter: blur(1px); }
-      100% { opacity: 1; filter: blur(0); transform: none; }
+      0%   { opacity: 0; filter: blur(14px); transform: translateY(var(--wy, 10px)) scale(0.96); }
+      45%  { opacity: 0.65; filter: blur(2px); }
+      100% { opacity: 1;  filter: blur(0);   transform: none; }
+    }
+    @keyframes subWordIn {
+      from { opacity: 0; filter: blur(7px); transform: translateY(5px); }
+      to   { opacity: 1; filter: blur(0);   transform: none; }
     }
 
     /* ── Section commons ── */
@@ -654,7 +664,7 @@
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       [data-hero-anim]  { opacity: 1 !important; transform: none !important; animation: none !important; }
-      .word-in          { opacity: 1 !important; filter: none !important; transform: none !important; animation: none !important; }
+      .word-in, .sub-word-in { opacity: 1 !important; filter: none !important; transform: none !important; animation: none !important; }
       .js-ready [data-reveal], .js-ready [data-reveal="left"] { opacity: 1 !important; transform: none !important; transition: none !important; }
       .wm { opacity: .045 !important; transition: none !important; }
       .scroll-line { animation: none; height: 44px; }
@@ -720,13 +730,13 @@
         <span class="h1-line">Your <em class="accent">demo</em> should be too.</span>
       </h1>
 
-      <hr class="hero-rule" data-hero-anim style="--delay:560ms" />
+      <hr class="hero-rule" data-hero-anim style="--delay:500ms" />
 
       <p class="hero-sub" data-hero-anim style="--delay:460ms">
         Motion designer in Stockholm. I work with early-stage startups and product teams who know what they've built — they just need the world to see it clearly. Specialized in SaaS demos and AI explainers.
       </p>
 
-      <div class="hero-ctas" data-hero-anim style="--delay:880ms">
+      <div class="hero-ctas" data-hero-anim style="--delay:860ms">
         <a href="#work" class="cta-primary">View work <span class="cta-arrow">→</span></a>
         <a href="#contact" class="cta-secondary">Start a project</a>
       </div>
@@ -1604,9 +1614,12 @@
 
     /* ── Hero word-blur entrance ── */
     (function () {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      // NOTE: do NOT early-return on prefers-reduced-motion here.
+      // The CSS override (.word-in { opacity:1; animation:none }) handles that.
+      // Returning early would leave data-hero-anim on the element, causing the
+      // block-level animation to run or the element to stay invisible.
 
-      function splitAndAnimate(el, baseDelay, gap, dur) {
+      function splitAndAnimate(el, cls, baseDelay, gap, organic) {
         el.removeAttribute('data-hero-anim');
         el.removeAttribute('style');
 
@@ -1620,7 +1633,7 @@
             for (const part of parts) {
               if (/\S/.test(part)) {
                 const span = document.createElement('span');
-                span.className = 'word-in';
+                span.className = cls;
                 span.textContent = part;
                 words.push(span);
                 frag.appendChild(span);
@@ -1633,7 +1646,7 @@
             if (node.classList.contains('h1-line')) {
               Array.from(node.childNodes).forEach(process);
             } else if (/^(EM|STRONG|B|I)$/.test(node.tagName)) {
-              node.classList.add('word-in');
+              node.classList.add(cls);
               words.push(node);
             }
           }
@@ -1643,15 +1656,20 @@
 
         words.forEach((w, i) => {
           w.style.animationDelay = (baseDelay + i * gap) + 'ms';
-          if (dur !== undefined) w.style.animationDuration = dur + 'ms';
+          if (organic) {
+            // Each word drops from a slightly different height — organic feel
+            w.style.setProperty('--wy', (7 + Math.random() * 7) + 'px');
+          }
         });
       }
 
       const h1  = document.querySelector('.hero-h1');
       const sub = document.querySelector('.hero-sub');
 
-      if (h1)  splitAndAnimate(h1,  100, 58);
-      if (sub) splitAndAnimate(sub, 390, 15, 500);
+      // H1: dramatic per-word blur, 55ms stagger, organic Y variation
+      if (h1)  splitAndAnimate(h1,  'word-in',     80,  55, true);
+      // Sub: fast light sweep, 12ms stagger
+      if (sub) splitAndAnimate(sub, 'sub-word-in', 460, 12, false);
     })();
   </script>
 </body>
