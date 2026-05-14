@@ -314,7 +314,8 @@
     .work-stack-item:nth-child(1) .work-stack-card { top: 80px; z-index: 1; }
     .work-stack-item:nth-child(2) .work-stack-card { top: 100px; z-index: 2; }
     .work-stack-item:nth-child(3) .work-stack-card { top: 120px; z-index: 3; }
-    .work-thumb { aspect-ratio: 16/9; background: #161616; position: relative; overflow: hidden; }
+    .work-thumb { aspect-ratio: 16/9; background: #161616; position: relative; overflow: hidden; transition: opacity 0.5s ease; }
+    .work-stack-card.card-inactive .work-thumb { opacity: 0.35; }
     .thumb-pattern { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 400ms ease; }
     .work-stack-card:hover .thumb-pattern { transform: translateY(2px); }
     .thumb-year { position: absolute; top: 12px; left: 12px; font-family: 'Geist Mono', monospace; font-size: 10px; color: rgba(232,232,232,0.25); letter-spacing: 0.06em; z-index: 1; }
@@ -812,22 +813,26 @@
 
         <!-- Visual 01: Send the brief -->
         <div class="process-visual-item active" data-visual="0">
-          <img src="media/Send%20the%20breif.png" alt="Send the brief" loading="lazy" />
+          <!-- x-align: change 'center' → left / right / 20% / 80% etc. -->
+          <img src="media/Send%20the%20breif.png" alt="Send the brief" loading="lazy" style="object-position: center center" />
         </div>
 
         <!-- Visual 02: Direction & strategy -->
         <div class="process-visual-item" data-visual="1">
-          <img src="media/Direction%20%26%20strategy.png" alt="Direction and strategy" loading="lazy" />
+          <!-- x-align: change 'center' → left / right / 20% / 80% etc. -->
+          <img src="media/Direction%20%26%20strategy.png" alt="Direction and strategy" loading="lazy" style="object-position: center center" />
         </div>
 
         <!-- Visual 03: Production -->
         <div class="process-visual-item" data-visual="2">
-          <img src="media/Production.png" alt="Production" loading="lazy" />
+          <!-- x-align: change 'center' → left / right / 20% / 80% etc. -->
+          <img src="media/Production.png" alt="Production" loading="lazy" style="object-position: center center" />
         </div>
 
         <!-- Visual 04: Refined and delivered -->
         <div class="process-visual-item" data-visual="3">
-          <img src="media/Refined%20and%20delivered.png" alt="Refined and delivered" loading="lazy" />
+          <!-- x-align: change 'center' → left / right / 20% / 80% etc. -->
+          <img src="media/Refined%20and%20delivered.png" alt="Refined and delivered" loading="lazy" style="object-position: center center" />
         </div>
 
       </div><!-- /process-visuals -->
@@ -1066,23 +1071,53 @@
       updateWorkCards();
     }, { passive: true });
 
-    /* Work card depth scale */
+    /* Work card depth scale + active video control */
     const stackCards = Array.from(document.querySelectorAll('.work-stack-card'));
+    const stackItems = Array.from(document.querySelectorAll('.work-stack-item'));
+    const stackVideos = stackCards.map(c => c.querySelector('video.thumb-pattern'));
+    let activeCardIdx = 0;
+
     function updateWorkCards() {
       if (!stackCards.length) return;
+
+      /* Determine which card is on top: last item whose top has crossed mid-viewport */
+      let newActive = 0;
+      stackItems.forEach((item, i) => {
+        if (item.getBoundingClientRect().top < window.innerHeight * 0.55) newActive = i;
+      });
+
+      /* Scale + active/inactive per card */
       stackCards.forEach((card, i) => {
+        /* Depth scale */
         const next = stackCards[i + 1];
-        if (!next) { card.style.transform = ''; return; }
-        const cardRect = card.getBoundingClientRect();
-        const nextRect = next.getBoundingClientRect();
-        const overlap = cardRect.bottom - nextRect.top;
-        if (overlap > 0) {
-          const progress = Math.min(1, overlap / 300);
-          card.style.transform = `scale(${(1 - 0.03 * progress).toFixed(4)})`;
-        } else {
+        if (!next) {
           card.style.transform = '';
+        } else {
+          const cardRect = card.getBoundingClientRect();
+          const nextRect = next.getBoundingClientRect();
+          const overlap = cardRect.bottom - nextRect.top;
+          if (overlap > 0) {
+            const progress = Math.min(1, overlap / 300);
+            card.style.transform = `scale(${(1 - 0.03 * progress).toFixed(4)})`;
+          } else {
+            card.style.transform = '';
+          }
+        }
+
+        /* Active state */
+        card.classList.toggle('card-inactive', i !== newActive);
+
+        /* Play / pause */
+        const v = stackVideos[i];
+        if (!v || !v.src) return;
+        if (i === newActive) {
+          v.play().catch(() => {});
+        } else {
+          v.pause();
         }
       });
+
+      activeCardIdx = newActive;
     }
 
     /* Custom cursor */
@@ -1334,7 +1369,7 @@
       });
     })();
 
-    /* ── Lazy-load work card videos ── */
+    /* ── Lazy-load work card videos (load only, play managed by updateWorkCards) ── */
     (function () {
       const videos = document.querySelectorAll('video[data-src]');
       if (!videos.length) return;
@@ -1344,7 +1379,6 @@
           var v = entry.target;
           v.src = v.dataset.src;
           v.load();
-          v.play().catch(function () {});
           obs.unobserve(v);
         });
       }, { rootMargin: '300px' });
