@@ -1119,6 +1119,7 @@
 
       activeCardIdx = newActive;
     }
+    updateWorkCards(); /* run once on load to set initial active state */
 
     /* Custom cursor */
     const cursor = document.getElementById('cursor');
@@ -1380,6 +1381,8 @@
           v.src = v.dataset.src;
           v.load();
           obs.unobserve(v);
+          /* Re-evaluate after src is set so active card starts immediately */
+          v.addEventListener('loadedmetadata', function () { updateWorkCards(); }, { once: true });
         });
       }, { rootMargin: '300px' });
       videos.forEach(function (v) { obs.observe(v); });
