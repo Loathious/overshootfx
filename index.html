@@ -336,7 +336,7 @@
     /* Section watermark — tighter, more intentional */
     .wm {
       position: absolute;
-      top: 0; left: var(--gutter);
+      top: 0; left: max(var(--gutter), calc((100% - var(--max-w)) / 2 + var(--gutter)));
       font-size: clamp(52px, 9vw, 112px);
       font-weight: 800; letter-spacing: -.04em;
       color: #fff; opacity: 0;
@@ -773,10 +773,6 @@
   <!-- WORK -->
   <section id="work" class="section">
     <div class="wm" aria-hidden="true">Work</div>
-    <div class="work-inner">
-      <div class="work-head" data-reveal>
-        <p class="sec-label">Selected work</p>
-      </div>
       <div class="work-stack">
 
         <!-- Card 1: Raycast -->
@@ -901,7 +897,6 @@
   <section id="about" class="section">
     <div class="wm" aria-hidden="true">About</div>
     <div class="wrap">
-      <p class="sec-label" data-reveal>About</p>
       <div class="about-layout">
         <div class="about-prose" data-reveal>
           <p>Specialized in motion design for AI and SaaS products.</p>
@@ -953,7 +948,6 @@
     <div class="wm" aria-hidden="true">Process</div>
     <div class="wrap">
       <div class="process-head" data-reveal>
-        <p class="sec-label">How it works</p>
       </div>
     </div>
 
