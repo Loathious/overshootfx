@@ -1223,87 +1223,104 @@
       const ctx = canvas.getContext('2d');
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      const COUNT = 180, CONNECT_D = 130, REPEL_D = 200, REPEL_F = 0.7, PULSE_CYCLE = 5200;
-      const LAYERS = [
-        { spd: 0.06, r: 0.6, a: 0.18, cap: 0.4 },
-        { spd: 0.14, r: 1.0, a: 0.32, cap: 0.9 },
-        { spd: 0.24, r: 1.6, a: 0.55, cap: 1.8 }
-      ];
+      const COUNT = 180, REPEL_D = 200, REPEL_F = 0.7;
       let W, H, pts = [], mX = -9999, mY = -9999;
-      let glowT = 0;
+      let smoothNX = 0, smoothNY = 0, mouseNX = 0, mouseNY = 0;
+      const shoots = [];
+      let nextShootAt = performance.now() + 4000 + Math.random() * 5000;
 
       function resize() { W = canvas.width = heroEl.offsetWidth; H = canvas.height = heroEl.offsetHeight; }
 
       function mkPt() {
-        const li = Math.random() < 0.35 ? 0 : Math.random() < 0.5 ? 1 : 2;
-        const L = LAYERS[li];
+        const rnd = Math.random();
+        const tier = rnd < 0.60 ? 0 : rnd < 0.90 ? 1 : 2;
+        const baseR = tier === 0 ? 0.5 + Math.random() * 0.4
+                    : tier === 1 ? 1.0 + Math.random() * 0.6
+                    :              1.8 + Math.random() * 0.8;
+        const baseBright = tier === 0 ? 0.20 + Math.random() * 0.45
+                         : tier === 1 ? 0.35 + Math.random() * 0.45
+                         :              0.55 + Math.random() * 0.35;
+        const li = Math.random() < 0.45 ? 0 : Math.random() < 0.55 ? 1 : 2;
+        const r  = li === 0 ? baseR * 0.3 : baseR;
+        const b  = li === 0 ? baseBright * 0.5 : baseBright;
         const angle = Math.random() * Math.PI * 2;
+        const spd = 0.4 + Math.random() * 0.6;
         return {
           x: Math.random() * W, y: Math.random() * H,
-          vx: Math.cos(angle) * L.spd, vy: Math.sin(angle) * L.spd,
-          r: L.r * (0.8 + Math.random() * 0.4),
-          a: L.a * (0.7 + Math.random() * 0.3),
-          phase: Math.random() * Math.PI * 2, li
+          vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd,
+          r, tier, li, brightness: b,
+          twinkleSpeed: 0.0004 + Math.random() * 0.001,
+          twinklePhase: Math.random() * Math.PI * 2
+        };
+      }
+
+      function mkShoot() {
+        const fromTop = Math.random() < 0.5;
+        const ang = (20 + Math.random() * 25) * Math.PI / 180;
+        const spd = 6 + Math.random() * 4;
+        return {
+          x: fromTop ? Math.random() * W : -10,
+          y: fromTop ? -10 : Math.random() * H * 0.5,
+          vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+          len: 80 + Math.random() * 80, life: 1,
+          decay: 0.018 + Math.random() * 0.007
         };
       }
 
       function draw(now) {
         ctx.clearRect(0, 0, W, H);
+        const PX = [6, 14, 24], PY = [4, 9, 16];
 
-        /* ambient glow drifts on a slow sine path */
-        glowT = now * 0.00018;
-        const gx = W * (0.3 + 0.25 * Math.sin(glowT * 0.7));
-        const gy = H * (0.25 + 0.2  * Math.cos(glowT));
-        const gr = ctx.createRadialGradient(gx, gy, 0, gx, gy, Math.max(W, H) * 0.55);
-        gr.addColorStop(0, 'rgba(255,255,255,0.028)');
-        gr.addColorStop(1, 'rgba(255,255,255,0)');
-        ctx.fillStyle = gr;
-        ctx.fillRect(0, 0, W, H);
-
-        /* connection lines with gradient fade */
-        for (let i = 0; i < pts.length - 1; i++) {
-          for (let j = i + 1; j < pts.length; j++) {
-            const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
-            const d = Math.sqrt(dx * dx + dy * dy);
-            if (d < CONNECT_D) {
-              const fade = 1 - d / CONNECT_D;
-              const maxA = 0.09 * fade * fade;
-              const lg = ctx.createLinearGradient(pts[i].x, pts[i].y, pts[j].x, pts[j].y);
-              lg.addColorStop(0, `rgba(255,255,255,${maxA.toFixed(4)})`);
-              lg.addColorStop(0.5, `rgba(255,255,255,${(maxA * 1.4).toFixed(4)})`);
-              lg.addColorStop(1, `rgba(255,255,255,${maxA.toFixed(4)})`);
-              ctx.beginPath();
-              ctx.moveTo(pts[i].x, pts[i].y);
-              ctx.lineTo(pts[j].x, pts[j].y);
-              ctx.strokeStyle = lg;
-              ctx.lineWidth = 0.35 + 0.25 * fade;
-              ctx.stroke();
-            }
-          }
-        }
-
-        /* particles with layer-scaled twinkle */
         for (const p of pts) {
-          const twinkle = 0.82 + 0.18 * Math.sin(now * (0.0005 + p.li * 0.0003) + p.phase);
+          const alpha  = p.brightness * (0.6 + 0.4 * Math.sin(now * p.twinkleSpeed + p.twinklePhase));
+          const drawX  = p.x + smoothNX * PX[p.li];
+          const drawY  = p.y + smoothNY * PY[p.li];
+
+          if (p.tier === 2) {
+            const spikeLen = p.r * 5;
+            ctx.save();
+            ctx.strokeStyle = `rgba(255,255,255,${(p.brightness * 0.15).toFixed(3)})`;
+            ctx.lineWidth = 0.6; ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(drawX - spikeLen, drawY); ctx.lineTo(drawX + spikeLen, drawY);
+            ctx.moveTo(drawX, drawY - spikeLen); ctx.lineTo(drawX, drawY + spikeLen);
+            ctx.stroke();
+            ctx.restore();
+          }
+
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${(p.a * twinkle).toFixed(3)})`;
+          ctx.arc(drawX, drawY, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
           ctx.fill();
         }
 
-        /* pulse ring */
-        const pulse = (now % PULSE_CYCLE) / PULSE_CYCLE;
-        const pAlpha = Math.max(0, 0.05 * (1 - pulse) * (1 - pulse));
-        if (pAlpha > 0.002) {
+        for (const s of shoots) {
+          const lifeAlpha = s.life > 0.85 ? (1 - s.life) / 0.15
+                          : s.life < 0.30 ? s.life / 0.30
+                          : 1.0;
+          const sp = Math.sqrt(s.vx * s.vx + s.vy * s.vy);
+          const tailX = s.x - (s.vx / sp) * s.len;
+          const tailY = s.y - (s.vy / sp) * s.len;
+          const lg = ctx.createLinearGradient(s.x, s.y, tailX, tailY);
+          lg.addColorStop(0, `rgba(255,255,255,${(0.9 * lifeAlpha).toFixed(3)})`);
+          lg.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.save();
+          ctx.strokeStyle = lg; ctx.lineWidth = 1.2; ctx.lineCap = 'round';
           ctx.beginPath();
-          ctx.arc(W * 0.62, H * 0.38, pulse * Math.max(W, H) * 1.2, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(255,255,255,${pAlpha.toFixed(4)})`;
-          ctx.lineWidth = 0.8;
+          ctx.moveTo(s.x, s.y); ctx.lineTo(tailX, tailY);
           ctx.stroke();
+          ctx.restore();
         }
       }
 
-      function step() {
+      function step(now) {
+        mouseNX = mX > -1000 ? (mX - W * 0.5) / (W * 0.5) : 0;
+        mouseNY = mY > -1000 ? (mY - H * 0.5) / (H * 0.5) : 0;
+        smoothNX += (mouseNX - smoothNX) * 0.04;
+        smoothNY += (mouseNY - smoothNY) * 0.04;
+
+        const velMul = [0.15, 0.5, 1.0];
+        const caps   = [0.30, 0.8, 1.4];
         for (const p of pts) {
           const dx = p.x - mX, dy = p.y - mY;
           const d = Math.sqrt(dx * dx + dy * dy);
@@ -1311,17 +1328,27 @@
             const f = ((REPEL_D - d) / REPEL_D) * REPEL_F;
             p.vx += (dx / d) * f; p.vy += (dy / d) * f;
           }
-          const L = LAYERS[p.li];
-          p.vx *= 0.974; p.vy *= 0.974;
+          p.vx *= 0.975; p.vy *= 0.975;
           const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-          if (spd > L.cap) { p.vx = p.vx / spd * L.cap; p.vy = p.vy / spd * L.cap; }
-          p.x += p.vx; p.y += p.vy;
+          if (spd > caps[p.li]) { p.vx = p.vx / spd * caps[p.li]; p.vy = p.vy / spd * caps[p.li]; }
+          const m = velMul[p.li];
+          p.x += p.vx * m; p.y += p.vy * m;
           if (p.x < -8) p.x = W + 8; else if (p.x > W + 8) p.x = -8;
           if (p.y < -8) p.y = H + 8; else if (p.y > H + 8) p.y = -8;
         }
+
+        for (let i = shoots.length - 1; i >= 0; i--) {
+          const s = shoots[i];
+          s.x += s.vx; s.y += s.vy; s.life -= s.decay;
+          if (s.life <= 0) shoots.splice(i, 1);
+        }
+        if (shoots.length < 2 && now >= nextShootAt) {
+          shoots.push(mkShoot());
+          nextShootAt = now + 4000 + Math.random() * 5000;
+        }
       }
 
-      function tick(now) { step(); draw(now); requestAnimationFrame(tick); }
+      function tick(now) { step(now); draw(now); requestAnimationFrame(tick); }
 
       resize();
       pts = Array.from({ length: COUNT }, mkPt);
