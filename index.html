@@ -296,19 +296,21 @@
       will-change: opacity, filter, transform;
     }
     .word-in {
-      animation: wordIn .78s var(--ease-out) forwards;
+      animation: wordIn 1.1s var(--ease-out) forwards;
     }
     .sub-word-in {
-      animation: subWordIn .42s var(--ease-out) forwards;
+      animation: subWordIn .65s var(--ease-out) forwards;
     }
     @keyframes wordIn {
-      0%   { opacity: 0; filter: blur(14px); transform: translateY(var(--wy, 10px)) scale(0.96); }
-      45%  { opacity: 0.65; filter: blur(2px); }
-      100% { opacity: 1;  filter: blur(0);   transform: none; }
+      0%   { opacity: 0; filter: blur(18px); transform: translateY(var(--wy, 12px)) scale(0.94); }
+      30%  { opacity: 0.35; filter: blur(7px); transform: translateY(calc(var(--wy, 12px) * 0.35)) scale(0.98); }
+      75%  { opacity: 0.85; filter: blur(0.8px); }
+      100% { opacity: 1;   filter: blur(0);     transform: none; }
     }
     @keyframes subWordIn {
-      from { opacity: 0; filter: blur(7px); transform: translateY(5px); }
-      to   { opacity: 1; filter: blur(0);   transform: none; }
+      0%   { opacity: 0; filter: blur(10px); transform: translateY(5px); }
+      55%  { filter: blur(0.6px); }
+      100% { opacity: 1; filter: blur(0);    transform: none; }
     }
 
     /* ── Section commons ── */
@@ -729,13 +731,13 @@
         <span class="h1-line">Your <em class="accent">demo</em> should be too.</span>
       </h1>
 
-      <hr class="hero-rule" data-hero-anim style="--delay:500ms" />
+      <hr class="hero-rule" data-hero-anim style="--delay:600ms" />
 
       <p class="hero-sub" data-hero-anim style="--delay:460ms">
         Motion designer in Stockholm. I work with early-stage startups and product teams who know what they've built — they just need the world to see it clearly. Specialized in SaaS demos and AI explainers.
       </p>
 
-      <div class="hero-ctas" data-hero-anim style="--delay:860ms">
+      <div class="hero-ctas" data-hero-anim style="--delay:1060ms">
         <a href="#work" class="cta-primary">View work <span class="cta-arrow">→</span></a>
         <a href="#contact" class="cta-secondary">Start a project</a>
       </div>
@@ -1262,25 +1264,33 @@
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       // Star pool
-      const COUNTS = [70, 40, 20]; // far, mid, near
+      const COUNTS = [85, 52, 24]; // far, mid, near — more stars = more connections
       const stars = [];
 
       function makeStar(layer) {
+        const r = layer === 0 ? 0.3 + Math.random() * 0.7
+                : layer === 1 ? 0.7 + Math.random() * 1.1
+                :               1.6 + Math.random() * 2.6;
+        // spikeType for near-layer: 0=none(40%), 1=cross(20%), 2=diagonal(20%), 3=4-star(10%), 4=lens(10%)
+        const st = layer === 2 ? (Math.random() < 0.4 ? 0
+                                : Math.random() < 0.5 ? 1
+                                : Math.random() < 0.5 ? 2
+                                : Math.random() < 0.5 ? 3 : 4) : -1;
         return {
           x: Math.random() * W,
           y: Math.random() * H,
-          layer,
-          r: layer === 0 ? 0.4 + Math.random() * 0.6
-           : layer === 1 ? 0.8 + Math.random() * 1.0
-           :               1.8 + Math.random() * 2.4,
-          brightness: 0.4 + Math.random() * 0.6,
-          twinkleSpeed: 0.0002 + Math.random() * 0.004,
+          layer, r,
+          brightness: 0.45 + Math.random() * 0.55,
+          twinkleSpeed:  0.00006 + Math.random() * 0.0006, // 10s–105s cycle — slow dreamlike breathing
           twinklePhase: Math.random() * Math.PI * 2,
           vx: (Math.random() - 0.5) * 0.7,
           vy: (Math.random() - 0.5) * 0.7,
           wanderAngle: Math.random() * Math.PI * 2,
           wanderRate:  0.001 + Math.random() * 0.004,
           sens: 0.4 + Math.random() * 0.6,
+          spikeType:  st,
+          spikeLen:   layer === 2 ? r * (3.5 + Math.random() * 5.5) : 0,
+          spikeAlpha: 0.08 + Math.random() * 0.18,
         };
       }
 
@@ -1311,7 +1321,7 @@
       canvas.addEventListener('mousemove', e => { mX = e.clientX; mY = e.clientY; });
       window.addEventListener('mousemove', e => { mX = e.clientX; mY = e.clientY; }, { passive: true });
 
-      const CONNECT_D = 120;
+      const CONNECT_D = 165;
       const DARK_R    = 320;
 
       function draw(now) {
@@ -1332,8 +1342,8 @@
             const d = Math.sqrt(ddx * ddx + ddy * ddy);
             if (d < CONNECT_D) {
               const fade = 1 - d / CONNECT_D;
-              const lA  = (0.10 * fade * fade).toFixed(4);
-              const lAm = (0.16 * fade * fade).toFixed(4);
+              const lA  = (0.13 * fade * fade).toFixed(4);
+              const lAm = (0.21 * fade * fade).toFixed(4);
               const lg = ctx.createLinearGradient(dp[i].x, dp[i].y, dp[j].x, dp[j].y);
               lg.addColorStop(0,   `rgba(255,255,255,${lA})`);
               lg.addColorStop(0.5, `rgba(255,255,255,${lAm})`);
@@ -1348,19 +1358,48 @@
           }
         }
 
-        // Stars
+        // Stars + glow bloom + varied spikes
         for (const { x, y, alpha, s } of dp) {
+          // Soft radial glow for mid/near bright stars
+          if (s.layer >= 1 && s.r > 1.0 && alpha > 0.3) {
+            const gr = ctx.createRadialGradient(x, y, 0, x, y, s.r * 5);
+            gr.addColorStop(0, `rgba(255,255,255,${(alpha * 0.12).toFixed(3)})`);
+            gr.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.beginPath(); ctx.arc(x, y, s.r * 5, 0, Math.PI * 2);
+            ctx.fillStyle = gr; ctx.fill();
+          }
+
+          // Star core
           ctx.beginPath();
           ctx.arc(x, y, s.r, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
           ctx.fill();
 
-          if (s.layer === 2 && s.r > 2) {
-            const spikeLen = s.r * 5;
-            ctx.strokeStyle = `rgba(255,255,255,${(alpha * 0.18).toFixed(3)})`;
-            ctx.lineWidth = 0.8;
-            ctx.beginPath(); ctx.moveTo(x - spikeLen, y); ctx.lineTo(x + spikeLen, y); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(x, y - spikeLen); ctx.lineTo(x, y + spikeLen); ctx.stroke();
+          // Varied spike shapes — only near-layer stars with spikeType > 0
+          if (s.spikeType > 0) {
+            const L  = s.spikeLen;
+            const Ld = L * 0.58; // shorter diagonal arms
+            const sA = (alpha * s.spikeAlpha).toFixed(3);
+            const sAd = (alpha * s.spikeAlpha * 0.45).toFixed(3);
+            ctx.lineWidth = 0.7;
+
+            if (s.spikeType === 1 || s.spikeType === 3) {
+              // Cross +
+              ctx.strokeStyle = `rgba(255,255,255,${sA})`;
+              ctx.beginPath(); ctx.moveTo(x - L, y); ctx.lineTo(x + L, y); ctx.stroke();
+              ctx.beginPath(); ctx.moveTo(x, y - L); ctx.lineTo(x, y + L); ctx.stroke();
+            }
+            if (s.spikeType === 2 || s.spikeType === 3) {
+              // Diagonal × — fainter when combined with cross
+              ctx.strokeStyle = `rgba(255,255,255,${s.spikeType === 3 ? sAd : sA})`;
+              ctx.beginPath(); ctx.moveTo(x - Ld, y - Ld); ctx.lineTo(x + Ld, y + Ld); ctx.stroke();
+              ctx.beginPath(); ctx.moveTo(x - Ld, y + Ld); ctx.lineTo(x + Ld, y - Ld); ctx.stroke();
+            }
+            if (s.spikeType === 4) {
+              // Lens flare — horizontal only, longer
+              ctx.strokeStyle = `rgba(255,255,255,${sA})`;
+              ctx.beginPath(); ctx.moveTo(x - L * 1.5, y); ctx.lineTo(x + L * 1.5, y); ctx.stroke();
+            }
           }
         }
 
@@ -1665,10 +1704,10 @@
       const h1  = document.querySelector('.hero-h1');
       const sub = document.querySelector('.hero-sub');
 
-      // H1: dramatic per-word blur, 55ms stagger, organic Y variation
-      if (h1)  splitAndAnimate(h1,  'word-in',     80,  55, true);
-      // Sub: fast light sweep, 12ms stagger
-      if (sub) splitAndAnimate(sub, 'sub-word-in', 460, 12, false);
+      // H1: cinematic per-word blur, 70ms stagger, organic Y variation
+      if (h1)  splitAndAnimate(h1,  'word-in',     80,  70, true);
+      // Sub: lighter sweep, 16ms stagger, starts after h1 establishes
+      if (sub) splitAndAnimate(sub, 'sub-word-in', 540, 16, false);
     })();
   </script>
 </body>
