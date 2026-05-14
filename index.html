@@ -56,6 +56,7 @@
       #cursor { display: block; }
       body { cursor: none; }
       a, button, .chip-opt, .work-stack-card, select, label { cursor: none; }
+      input, textarea { cursor: text; }
     }
 
     /* ── Layout helpers ── */
@@ -191,7 +192,7 @@
       position: relative; z-index: 4;
       width: 100%; max-width: var(--max-w);
       margin: 0 auto;
-      padding: clamp(100px, 14vh, 160px) var(--gutter) clamp(80px, 10vh, 120px);
+      padding: max(120px, 18vh) var(--gutter) clamp(80px, 10vh, 120px);
     }
 
     /* Status */
@@ -289,14 +290,17 @@
     .wm {
       position: absolute;
       top: 0; left: var(--gutter);
-      font-size: clamp(60px, 12vw, 140px);
+      font-size: clamp(52px, 9vw, 112px);
       font-weight: 800; letter-spacing: -.04em;
       color: #fff; opacity: 0;
       pointer-events: none; user-select: none;
       white-space: nowrap; line-height: 1; z-index: 0;
       transition: opacity .7s;
     }
-    .wm.visible { opacity: 0.045; }
+    .wm.visible { opacity: 0.032; }
+    #work    .wm { top: -20px; }
+    #about   .wm { top: -10px; }
+    #contact .wm { top: -40px; }
 
     .sec-label {
       font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: .12em;
@@ -344,14 +348,17 @@
       transition: transform .15s, box-shadow .25s;
       transform-origin: top center;
     }
-    .work-stack-card:hover { box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 32px 80px rgba(0,0,0,0.5); }
+    .work-stack-card:hover { box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 32px 80px rgba(0,0,0,0.55); }
     .work-stack-item:nth-child(1) .work-stack-card { top: 80px;  z-index: 1; }
     .work-stack-item:nth-child(2) .work-stack-card { top: 100px; z-index: 2; }
     .work-stack-item:nth-child(3) .work-stack-card { top: 120px; z-index: 3; }
 
     .work-thumb {
-      aspect-ratio: 16/9; background: #0e0e10; position: relative;
-      overflow: hidden; transition: opacity .5s;
+      aspect-ratio: 16/9;
+      background-color: #0e0e10;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 24px 24px;
+      position: relative; overflow: hidden; transition: opacity .5s;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
     }
     .work-stack-card.card-inactive .work-thumb { opacity: .32; }
@@ -363,6 +370,29 @@
     }
     .work-stack-card:hover .work-thumb::after { opacity: 1; }
 
+    /* Video controls */
+    .work-vid-controls {
+      position: absolute; bottom: 10px; right: 10px;
+      display: flex; gap: 5px; z-index: 4;
+      opacity: 0; transition: opacity .2s;
+    }
+    .work-stack-card:hover .work-vid-controls { opacity: 1; }
+    .work-ctrl {
+      display: flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px;
+      background: rgba(6,6,8,0.72);
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 4px; color: rgba(240,240,240,0.65);
+      padding: 0; transition: background .15s, border-color .15s, color .15s;
+      cursor: none;
+    }
+    .work-ctrl:hover {
+      background: rgba(6,6,8,0.90);
+      border-color: rgba(255,255,255,0.24);
+      color: rgba(240,240,240,0.95);
+    }
+    .work-ctrl svg { display: block; pointer-events: none; }
+
     .work-body { padding: 16px 22px 22px; }
     .work-meta-row { display: flex; justify-content: space-between; align-items: center; }
     .work-client { font-size: 16px; font-weight: 600; letter-spacing: -.022em; color: rgba(240,240,240,.88); }
@@ -371,7 +401,7 @@
     .work-badge { font-size: 9px; letter-spacing: .10em; text-transform: uppercase; color: var(--ink-3); border: 1px solid var(--border-mid); padding: 2px 7px; border-radius: 3px; }
 
     /* ── ABOUT ── */
-    #about { padding: 140px 0 100px; }
+    #about { padding: 140px 0 80px; }
 
     .about-layout {
       display: grid;
@@ -407,7 +437,7 @@
     .card-divider { height: 1px; background: var(--border); }
 
     /* ── PROCESS ── */
-    #process { padding: 100px 0 140px; }
+    #process { padding: 100px 0 80px; }
     .process-head { margin-bottom: 64px; }
 
     .process-showcase {
@@ -418,8 +448,8 @@
     /* Sticky visual panel */
     .process-visuals {
       position: sticky; top: 100px;
-      flex: 0 0 440px; height: 360px;
-      border-radius: 8px;
+      flex: 0 0 440px; height: 400px;
+      background: #111113; border-radius: 8px; overflow: hidden;
     }
     .process-visual-item {
       position: absolute; inset: 0; border-radius: 8px; overflow: hidden;
@@ -433,7 +463,7 @@
     .process-visual-item img { width: 100%; height: 100%; display: block; object-fit: cover; }
 
     /* Step list */
-    .process-steps-list { flex: 1; padding-bottom: 220px; }
+    .process-steps-list { flex: 1; padding-bottom: 140px; }
     .process-step-item {
       padding: 28px 0; border-bottom: 1px solid var(--border);
       opacity: .35; transition: opacity .55s;
@@ -597,6 +627,8 @@
     }
     @media (max-width: 480px) {
       .work-badge { display: none; }
+      .h1-line { white-space: normal; }
+      .hero-h1 { font-size: max(28px, 8.5vw); }
     }
 
     /* ── Reduced motion ── */
@@ -704,6 +736,14 @@
           <article class="work-stack-card" data-reveal>
             <div class="work-thumb">
               <video class="thumb-pattern" data-src="media/raycast.mp4" muted loop playsinline preload="none"></video>
+              <div class="work-vid-controls" aria-label="Video controls">
+                <button class="work-ctrl work-ctrl-play" aria-label="Play / Pause">
+                  <svg width="8" height="10" viewBox="0 0 8 10" fill="none"><path class="icon-pause-a" d="M1 1H3V9H1Z" fill="currentColor"/><path class="icon-pause-b" d="M5 1H7V9H5Z" fill="currentColor"/><path class="icon-play-a" d="M1 1L7 5L1 9Z" fill="currentColor" style="display:none"/></svg>
+                </button>
+                <button class="work-ctrl work-ctrl-mute" aria-label="Mute / Unmute">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path class="icon-muted-a" d="M1 3.5H2.5L5 1.5V8.5L2.5 6.5H1V3.5Z" fill="currentColor"/><line class="icon-muted-b" x1="7" y1="3" x2="9.5" y2="5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line class="icon-muted-c" x1="9.5" y1="3" x2="7" y2="5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path class="icon-sound-a" d="M1 3.5H2.5L5 1.5V8.5L2.5 6.5H1V3.5Z" fill="currentColor" style="display:none"/><path class="icon-sound-b" d="M7 3.5C8 4.2 8 5.8 7 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" style="display:none"/></svg>
+                </button>
+              </div>
             </div>
             <div class="work-body">
               <div class="work-meta-row">
@@ -719,6 +759,14 @@
           <article class="work-stack-card" data-reveal>
             <div class="work-thumb">
               <video class="thumb-pattern" data-src="media/bezi.mp4" muted loop playsinline preload="none"></video>
+              <div class="work-vid-controls" aria-label="Video controls">
+                <button class="work-ctrl work-ctrl-play" aria-label="Play / Pause">
+                  <svg width="8" height="10" viewBox="0 0 8 10" fill="none"><path class="icon-pause-a" d="M1 1H3V9H1Z" fill="currentColor"/><path class="icon-pause-b" d="M5 1H7V9H5Z" fill="currentColor"/><path class="icon-play-a" d="M1 1L7 5L1 9Z" fill="currentColor" style="display:none"/></svg>
+                </button>
+                <button class="work-ctrl work-ctrl-mute" aria-label="Mute / Unmute">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path class="icon-muted-a" d="M1 3.5H2.5L5 1.5V8.5L2.5 6.5H1V3.5Z" fill="currentColor"/><line class="icon-muted-b" x1="7" y1="3" x2="9.5" y2="5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line class="icon-muted-c" x1="9.5" y1="3" x2="7" y2="5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path class="icon-sound-a" d="M1 3.5H2.5L5 1.5V8.5L2.5 6.5H1V3.5Z" fill="currentColor" style="display:none"/><path class="icon-sound-b" d="M7 3.5C8 4.2 8 5.8 7 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none" style="display:none"/></svg>
+                </button>
+              </div>
             </div>
             <div class="work-body">
               <div class="work-meta-row">
@@ -1128,7 +1176,7 @@
         card.classList.toggle('card-inactive', i !== newActive);
         const v = stackVideos[i];
         if (!v || !v.src) return;
-        if (i === newActive) { v.play().catch(() => {}); } else { v.pause(); }
+        if (i === newActive && !v.dataset.userPaused) { v.play().catch(() => {}); } else if (i !== newActive) { v.pause(); }
       });
       activeCardIdx = newActive;
     }
@@ -1149,6 +1197,12 @@
       document.querySelectorAll('a, button, .chip-opt, .work-stack-card, select').forEach(el => {
         el.addEventListener('mouseenter', () => cursor.classList.add('large'));
         el.addEventListener('mouseleave', () => cursor.classList.remove('large'));
+      });
+      document.querySelectorAll('input, textarea').forEach(el => {
+        el.addEventListener('mouseenter', () => { cursor.style.opacity = '0'; });
+        el.addEventListener('mouseleave', () => { cursor.style.opacity = ''; });
+        el.addEventListener('focus',      () => { cursor.style.opacity = '0'; });
+        el.addEventListener('blur',       () => { cursor.style.opacity = ''; });
       });
     }
 
@@ -1369,6 +1423,56 @@
         });
       }, { rootMargin: '300px' });
       videos.forEach(v => obs.observe(v));
+    })();
+
+    /* ── Video controls ── */
+    (function () {
+      document.querySelectorAll('.work-vid-controls').forEach(ctrl => {
+        const thumb = ctrl.closest('.work-thumb');
+        const video = thumb && thumb.querySelector('video.thumb-pattern');
+        if (!video) return;
+
+        const playBtn  = ctrl.querySelector('.work-ctrl-play');
+        const muteBtn  = ctrl.querySelector('.work-ctrl-mute');
+
+        function syncPlay() {
+          const paused = video.paused;
+          playBtn.querySelector('.icon-pause-a').style.display = paused ? 'none' : '';
+          playBtn.querySelector('.icon-pause-b').style.display = paused ? 'none' : '';
+          playBtn.querySelector('.icon-play-a').style.display  = paused ? '' : 'none';
+          playBtn.setAttribute('aria-label', paused ? 'Play' : 'Pause');
+        }
+        function syncMute() {
+          const muted = video.muted;
+          muteBtn.querySelector('.icon-muted-a').style.display = muted ? '' : 'none';
+          muteBtn.querySelector('.icon-muted-b').style.display = muted ? '' : 'none';
+          muteBtn.querySelector('.icon-muted-c').style.display = muted ? '' : 'none';
+          muteBtn.querySelector('.icon-sound-a').style.display = muted ? 'none' : '';
+          muteBtn.querySelector('.icon-sound-b').style.display = muted ? 'none' : '';
+          muteBtn.setAttribute('aria-label', muted ? 'Unmute' : 'Mute');
+        }
+
+        playBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          if (video.paused) {
+            video.dataset.userPaused = '';
+            video.play().catch(() => {});
+          } else {
+            video.dataset.userPaused = 'true';
+            video.pause();
+          }
+        });
+        muteBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          video.muted = !video.muted;
+          syncMute();
+        });
+
+        video.addEventListener('play',  syncPlay);
+        video.addEventListener('pause', syncPlay);
+        syncPlay();
+        syncMute();
+      });
     })();
 
     /* ── Contact form → Formspree ── */
