@@ -427,8 +427,12 @@
     .chip-opt input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
     .chip-opt:has(input:checked) { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.30); color: #e8e8e8; }
     .form-legal { font-size: 11.5px; line-height: 1.65; color: rgba(232,232,232,0.24); margin-bottom: 28px; max-width: 560px; }
-    .btn-submit { display: inline-flex; align-items: center; padding: 13px 28px; background: transparent; color: rgba(232,232,232,0.90); font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; transition: border-color 0.25s, box-shadow 0.25s; }
+    .btn-submit { display: inline-flex; align-items: center; padding: 13px 28px; background: transparent; color: rgba(232,232,232,0.90); font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; transition: border-color 0.25s, box-shadow 0.25s, opacity 0.2s; }
     .btn-submit:hover { border-color: rgba(255,255,255,0.30); box-shadow: 0 0 30px rgba(255,255,255,0.08); }
+    .btn-submit:disabled { opacity: 0.45; pointer-events: none; }
+    .form-toast { margin-top: 20px; padding: 14px 18px; border-radius: 6px; font-size: 13.5px; line-height: 1.5; display: none; }
+    .form-toast.success { display: block; background: rgba(60,180,100,0.10); border: 1px solid rgba(60,180,100,0.25); color: rgba(100,220,140,0.9); }
+    .form-toast.error   { display: block; background: rgba(220,60,60,0.10);  border: 1px solid rgba(220,60,60,0.22);  color: rgba(240,120,100,0.9); }
 
     /* ── FOOTER ── */
     footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 64px 48px 48px; overflow: hidden; }
@@ -603,14 +607,6 @@
     </div>
   </section>
 
-  <!-- PRESS BAR -->
-  <div id="press">
-    <div class="press-row">
-      <span class="press-eyebrow">Worked with</span>
-      <span class="press-names-line">Raycast &nbsp;·&nbsp; Bezi &nbsp;·&nbsp; undisclosed</span>
-    </div>
-  </div>
-
   <!-- WORK -->
   <section id="work" class="section">
     <div class="wm" aria-hidden="true">Work</div>
@@ -677,7 +673,6 @@
             <div class="work-meta-row">
               <div>
                 <div class="work-client">Raycast</div>
-                <div class="work-tagline">Productivity, animated.</div>
               </div>
               <span class="work-year">2025</span>
             </div>
@@ -748,7 +743,6 @@
             <div class="work-meta-row">
               <div>
                 <div class="work-client">Bezi</div>
-                <div class="work-tagline">3D, demystified.</div>
               </div>
               <span class="work-year">2025</span>
             </div>
@@ -831,7 +825,6 @@
             <div class="work-meta-row">
               <div>
                 <div class="work-client">Undisclosed</div>
-                <div class="work-tagline">AI for critical systems.</div>
               </div>
               <div class="work-year-group">
                 <span class="work-badge">In progress</span>
@@ -1258,7 +1251,7 @@
         <p class="contact-sub">Fill in as much or as little as you have. I'll get back within 48 hours.</p>
       </div>
 
-      <form class="contact-form" action="mailto:mail@alfredgustafsson.se" method="post" enctype="text/plain" novalidate>
+      <form class="contact-form" novalidate>
 
         <!-- Section 1: About you -->
         <div class="form-section" data-reveal>
@@ -1381,6 +1374,7 @@
         </p>
 
         <button type="submit" class="btn-submit" data-reveal>Send it over</button>
+        <div class="form-toast" id="form-toast" role="alert" aria-live="polite"></div>
 
       </form>
     </div>
@@ -1712,6 +1706,67 @@
         if (mq.matches) { obs.disconnect(); steps.forEach(s => s.classList.add('active')); }
         else            { steps.forEach(s => obs.observe(s)); }
       });
+    })();
+
+    /* ── Contact form → Formspree ── */
+    (function () {
+      const ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID'; // ← replace YOUR_FORM_ID
+
+      const form  = document.querySelector('.contact-form');
+      const toast = document.getElementById('form-toast');
+      if (!form || !toast) return;
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const btn = form.querySelector('.btn-submit');
+        const originalLabel = btn.textContent;
+
+        /* Validate required fields */
+        const required = form.querySelectorAll('[required]');
+        let valid = true;
+        required.forEach(el => {
+          if (!el.value.trim()) { el.focus(); valid = false; }
+        });
+        if (!valid) {
+          showToast('error', 'Please fill in all required fields (name, email, description).');
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+        toast.className = 'form-toast';
+
+        try {
+          const res = await fetch(ENDPOINT, {
+            method:  'POST',
+            body:    new FormData(form),
+            headers: { Accept: 'application/json' }
+          });
+
+          if (res.ok) {
+            form.reset();
+            showToast('success', 'Sent — I\'ll get back to you within 48 hours.');
+            btn.textContent = 'Sent ✓';
+          } else {
+            const json = await res.json().catch(() => ({}));
+            const msg  = json.errors ? json.errors.map(e => e.message).join(', ') : 'Something went wrong.';
+            showToast('error', msg);
+            btn.disabled    = false;
+            btn.textContent = originalLabel;
+          }
+        } catch (_) {
+          showToast('error', 'Network error — please try again or email me directly at mail@alfredgustafsson.se.');
+          btn.disabled    = false;
+          btn.textContent = originalLabel;
+        }
+      });
+
+      function showToast(type, msg) {
+        toast.textContent  = msg;
+        toast.className    = 'form-toast ' + type;
+        toast.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
     })();
   </script>
 </body>
