@@ -1224,7 +1224,6 @@
     document.querySelectorAll('[data-reveal], .wm').forEach(el => revealObs.observe(el));
 
     /* ── Hero particle canvas ── */
-    document.addEventListener('DOMContentLoaded', function () {
     (function () {
       const canvas = document.getElementById('hero-canvas');
       if (!canvas) return;
@@ -1372,20 +1371,15 @@
       }
 
       function tick(now) {
-        step();
+        if (!reduced) step();
         draw(now);
         requestAnimationFrame(tick);
       }
 
       window.addEventListener('resize', resize, { passive: true });
 
-      if (reduced) {
-        draw(0);
-      } else {
-        requestAnimationFrame(tick);
-      }
+      requestAnimationFrame(tick);
     })();
-    });
 
     /* ── Hero glow parallax ── */
     (function () {
