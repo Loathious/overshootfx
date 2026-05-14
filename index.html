@@ -1288,48 +1288,70 @@
       canvas.addEventListener('mousemove', e => { mX = e.clientX; mY = e.clientY; });
       window.addEventListener('mousemove', e => { mX = e.clientX; mY = e.clientY; }, { passive: true });
 
-      const PARALLAX = [5, 14, 26]; // per layer
+      const PARALLAX = [10, 28, 52]; // per layer — doubled for visible response
+      const CONNECT_D = 120;
+      const DARK_R    = 320;
 
       function draw(now) {
         ctx.clearRect(0, 0, W, H);
 
-        // Debug test dot — remove after confirming canvas is live
-        ctx.fillStyle = 'rgba(255,255,255,0.9)';
-        ctx.beginPath();
-        ctx.arc(W * 0.5, H * 0.5, 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Lerp parallax
+        // Lerp parallax — slightly faster for snappier feel
         const tNX = (mX - W * 0.5) / (W * 0.5);
         const tNY = (mY - H * 0.5) / (H * 0.5);
-        smoothNX += (tNX - smoothNX) * 0.04;
-        smoothNY += (tNY - smoothNY) * 0.04;
+        smoothNX += (tNX - smoothNX) * 0.06;
+        smoothNY += (tNY - smoothNY) * 0.06;
 
-        // Draw stars
-        for (const s of stars) {
-          const alpha = s.brightness * (0.55 + 0.45 * Math.sin(now * s.twinkleSpeed + s.twinklePhase));
-          const px = PARALLAX[s.layer];
-          const py = PARALLAX[s.layer] * 0.65;
-          const dx = s.x + smoothNX * px;
-          const dy = s.y + smoothNY * py;
+        // Pre-compute draw positions + alpha with parallax and mouse darkening
+        const dp = stars.map(s => {
+          const px = PARALLAX[s.layer], py = PARALLAX[s.layer] * 0.65;
+          const x = s.x + smoothNX * px;
+          const y = s.y + smoothNY * py;
+          const twinkle = 0.55 + 0.45 * Math.sin(now * s.twinkleSpeed + s.twinklePhase);
+          const mdist = Math.sqrt((x - mX) ** 2 + (y - mY) ** 2);
+          const dark  = mdist < DARK_R ? 1 - ((1 - mdist / DARK_R) ** 2) * 0.88 : 1;
+          return { x, y, alpha: s.brightness * twinkle * dark, s };
+        });
 
-          ctx.beginPath();
-          ctx.arc(dx, dy, s.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
-          ctx.fill();
-
-          // Spike for large stars
-          if (s.layer === 2 && s.r > 2) {
-            const spikeLen = s.r * 5;
-            const spikeAlpha = alpha * 0.18;
-            ctx.strokeStyle = `rgba(255,255,255,${spikeAlpha.toFixed(3)})`;
-            ctx.lineWidth = 0.8;
-            ctx.beginPath(); ctx.moveTo(dx - spikeLen, dy); ctx.lineTo(dx + spikeLen, dy); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(dx, dy - spikeLen); ctx.lineTo(dx, dy + spikeLen); ctx.stroke();
+        // Connection lines — drawn first so stars sit on top
+        for (let i = 0; i < dp.length - 1; i++) {
+          for (let j = i + 1; j < dp.length; j++) {
+            const ddx = dp[i].x - dp[j].x, ddy = dp[i].y - dp[j].y;
+            const d = Math.sqrt(ddx * ddx + ddy * ddy);
+            if (d < CONNECT_D) {
+              const fade = 1 - d / CONNECT_D;
+              const lA  = (0.10 * fade * fade).toFixed(4);
+              const lAm = (0.16 * fade * fade).toFixed(4);
+              const lg = ctx.createLinearGradient(dp[i].x, dp[i].y, dp[j].x, dp[j].y);
+              lg.addColorStop(0,   `rgba(255,255,255,${lA})`);
+              lg.addColorStop(0.5, `rgba(255,255,255,${lAm})`);
+              lg.addColorStop(1,   `rgba(255,255,255,${lA})`);
+              ctx.beginPath();
+              ctx.moveTo(dp[i].x, dp[i].y);
+              ctx.lineTo(dp[j].x, dp[j].y);
+              ctx.strokeStyle = lg;
+              ctx.lineWidth = 0.4;
+              ctx.stroke();
+            }
           }
         }
 
-        // Draw shooting stars
+        // Stars
+        for (const { x, y, alpha, s } of dp) {
+          ctx.beginPath();
+          ctx.arc(x, y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
+          ctx.fill();
+
+          if (s.layer === 2 && s.r > 2) {
+            const spikeLen = s.r * 5;
+            ctx.strokeStyle = `rgba(255,255,255,${(alpha * 0.18).toFixed(3)})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.moveTo(x - spikeLen, y); ctx.lineTo(x + spikeLen, y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x, y - spikeLen); ctx.lineTo(x, y + spikeLen); ctx.stroke();
+          }
+        }
+
+        // Shooting stars
         for (const sh of shoots) {
           const tailX = sh.x - Math.cos(sh.angle) * sh.length;
           const tailY = sh.y + Math.sin(sh.angle) * sh.length;
