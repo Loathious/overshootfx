@@ -300,13 +300,13 @@
     .press-names-line { font-family: 'Geist', sans-serif; font-size: 13px; font-weight: 400; color: rgba(232,232,232,0.35); }
 
     /* ── WORK ── */
-    #work { padding-top: 200px; }
+    #work { padding-top: 72px; }
     .work-head { margin-bottom: 52px; }
     .work-stack { max-width: 1760px; margin: 0 auto; padding: 0 48px 200px; }
     .work-stack-item { height: 55vh; min-height: 480px; }
     .work-stack-item:last-child { height: auto; min-height: auto; }
     .work-stack-card {
-      position: sticky; max-width: 900px; margin: 0;
+      position: sticky; margin: 0;
       background: #131313; border: 1px solid rgba(255,255,255,0.13); border-radius: 6px;
       overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
       transition: transform 0.15s ease; transform-origin: top center;
@@ -331,8 +331,8 @@
     .work-badge { font-size: 9px; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(232,232,232,0.50); border: 1px solid rgba(255,255,255,0.15); padding: 2px 7px; border-radius: 3px; }
 
     /* ── ABOUT ── */
-    #about { padding: 200px 0; }
-    .about-layout { display: grid; grid-template-columns: 1fr 312px; gap: 48px; align-items: start; }
+    #about { padding: 200px 0 120px; }
+    .about-layout { display: grid; grid-template-columns: minmax(200px, 520px) 312px; gap: 60px; align-items: start; }
     .about-prose p { font-size: 15px; line-height: 1.65; color: rgba(232,232,232,0.58); margin-bottom: 24px; max-width: 600px; }
     .about-prose p:last-child { margin-bottom: 0; }
     .about-card { position: sticky; top: 80px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.09); border-radius: 6px; overflow: hidden; }
@@ -372,7 +372,7 @@
     /* Step list */
     .process-steps-list { flex: 1; padding-bottom: 220px; }
     .process-step-item {
-      padding: 44px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 28px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
       opacity: 0.40; transition: opacity 0.55s ease;
     }
     .process-step-item:first-child { padding-top: 0; }
@@ -396,16 +396,17 @@
     .process-step-item.active .psi-timing { color: rgba(232,232,232,0.32); }
     .psi-desc {
       font-size: 14px; line-height: 1.72; color: rgba(232,232,232,0.38);
-      max-width: 380px; transition: color 0.4s ease;
+      max-width: 560px; transition: color 0.4s ease;
     }
     .process-step-item.active .psi-desc { color: rgba(232,232,232,0.56); }
 
     /* ── CONTACT ── */
     #contact { padding: 140px 0 80px; }
+    #contact .wm { top: -80px; }
     .contact-head { margin-bottom: 60px; }
     .contact-h2 { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; color: rgba(242,242,242,0.90); line-height: 1.08; margin-bottom: 14px; }
     .contact-sub { font-size: 15px; color: rgba(232,232,232,0.40); }
-    .contact-form { max-width: 760px; }
+    .contact-form { max-width: 880px; }
     .form-section { margin-bottom: 40px; }
     .form-section-head { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 14px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.10); border-bottom: 1px solid rgba(255,255,255,0.06); }
     .form-num { font-family: 'Geist Mono', monospace; font-size: 10px; font-weight: 400; color: rgba(232,232,232,0.55); letter-spacing: 0.15em; }
@@ -438,7 +439,7 @@
     /* ── FOOTER ── */
     footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 64px 48px 48px; overflow: hidden; }
     .footer-inner { max-width: 1760px; margin: 0 auto; }
-    .footer-wm { font-size: 48px; font-weight: 800; letter-spacing: -0.055em; color: rgba(232,232,232,0.12); line-height: 0.85; margin-bottom: 48px; pointer-events: none; user-select: none; text-shadow: 0 0 120px rgba(255,255,255,0.06); }
+    .footer-wm { font-size: 30px; font-weight: 800; letter-spacing: -0.055em; color: rgba(232,232,232,0.12); line-height: 0.85; margin-bottom: 48px; pointer-events: none; user-select: none; text-shadow: 0 0 120px rgba(255,255,255,0.06); }
     .footer-bottom { display: flex; align-items: center; justify-content: space-between; }
     .footer-copy { font-family: 'Geist Mono', monospace; font-size: 11px; color: rgba(232,232,232,0.26); letter-spacing: 0.03em; }
     .footer-links { display: flex; align-items: center; gap: 20px; }
@@ -497,14 +498,14 @@
       .form-row { grid-template-columns: 1fr; }
       .form-section { margin-bottom: 32px; }
       footer { padding: 40px 20px 32px; }
-      .footer-wm { font-size: 60px; margin-bottom: 32px; }
+      .footer-wm { font-size: 30px; margin-bottom: 32px; }
       .footer-bottom { flex-direction: column; gap: 20px; align-items: flex-start; }
       .scroll-indicator { display: none; }
       .wm { top: 16px; left: 16px; }
     }
     @media (max-width: 480px) {
       .hero-h1 { font-size: clamp(32px, 9vw, 44px); }
-      .footer-wm { font-size: 44px; }
+      .footer-wm { font-size: 30px; }
       .work-badge { display: none; }
       .chip-select { gap: 6px; }
       .chip-opt { padding: 5px 10px; font-size: 12px; }
