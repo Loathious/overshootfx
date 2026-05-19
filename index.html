@@ -4,9 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Alfred Gustafsson — Overshoot</title>
-  <meta name="description" content="Overshoot — motion design for software products. Demo films that make what you've built feel worth buying." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='black'/><circle cx='50' cy='50' r='22' fill='white'/></svg>">
+  <meta name="description" content="Overshoot — motion design for software products. Demo films, launch videos, social ads." />
   <meta property="og:title" content="Alfred Gustafsson — Overshoot" />
-  <meta property="og:description" content="Motion designer in Stockholm. Demo films that make what you've built feel worth buying." />
+  <meta property="og:description" content="Motion design for software products. Based in Stockholm." />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:creator" content="@overshootvfx" />
@@ -137,7 +138,7 @@
 
     /* ── Block ── */
     .block { display: flex; flex-direction: column; gap: 32px; }
-    .block-inner { display: flex; flex-direction: column; gap: 20px; opacity: 0.8; }
+    .block-inner { display: flex; flex-direction: column; gap: 16px; opacity: 0.8; }
     .label { color: var(--fg-50); }
 
     /* ── Typography ── */
@@ -156,12 +157,12 @@
 
     /* ── Identity ── */
     .identity-name { font-weight: 400; font-size: 16px; }
-    .identity-role { color: var(--fg-50); margin-top: 2px; }
+    .identity-role { color: var(--fg-50); margin-top: 4px; }
     .identity-status {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: var(--fg-40);
+      color: var(--fg-30);
       font-size: 12px;
       margin-top: 8px;
     }
@@ -178,7 +179,7 @@
     }
 
     /* ── Tools line ── */
-    .tools-line { color: var(--fg-40); font-size: 12px; letter-spacing: 0.01em; }
+    .tools-line { color: var(--fg-30); font-size: 12px; letter-spacing: 0.01em; }
 
     /* ── Button ── */
     .btn {
@@ -202,8 +203,8 @@
     .btn:hover { opacity: 1; background: var(--fg-30); }
 
     /* ── Showcase ── */
-    .showcase-list { list-style: none; display: flex; flex-direction: column; gap: 28px; }
-    .showcase-item { display: flex; flex-direction: column; gap: 10px; }
+    .showcase-list { list-style: none; display: flex; flex-direction: column; gap: 24px; }
+    .showcase-item { display: flex; flex-direction: column; gap: 12px; }
 
     .video-wrap {
       border: 1px solid var(--fg-10);
@@ -272,17 +273,17 @@
     }
     .video-progress-fill { height: 100%; background: white; border-radius: 999px; width: 0%; }
 
-    .showcase-meta  { display: flex; flex-direction: column; gap: 4px; }
+    .showcase-meta  { display: flex; flex-direction: column; gap: 6px; }
     .showcase-title { font-weight: 400; }
-    .showcase-desc  { color: var(--fg); opacity: 0.8; }
+    .showcase-desc  { color: var(--fg-50); }
 
     /* ── Process ── */
     .process-list { list-style: none; }
     .process-item {
       display: flex;
       flex-direction: column;
-      gap: 5px;
-      padding: 14px 0;
+      gap: 8px;
+      padding: 16px 0;
     }
     .process-row { display: flex; align-items: flex-start; }
     .process-left { display: flex; flex-direction: column; gap: 2px; flex: 1; }
@@ -317,7 +318,7 @@
     .showcase-list:hover .showcase-item.playing { opacity: 1; }
 
     /* ── Contact form ── */
-    .form { display: flex; flex-direction: column; gap: 14px; }
+    .form { display: flex; flex-direction: column; gap: 16px; }
     .form-field { display: flex; flex-direction: column; gap: 6px; }
     .form-label { font-size: 13px; color: var(--fg-50); letter-spacing: -0.02em; }
     .form-input,
@@ -555,8 +556,8 @@
       <!-- Bio -->
       <div class="reveal" data-delay="60">
         <div class="block-inner">
-          <p class="reveal-item">I make <em class="serif">motion</em> for software products — demo films, launch videos, social ads. Work that makes what you've built <strong>feel worth buying</strong>.</p>
-          <p class="reveal-item" data-delay="40">Small studio. No agency overhead. Just a brief worth believing in.</p>
+          <p class="reveal-item">I make <em class="serif">motion</em> for software products — demo films, launch videos, social ads.</p>
+          <p class="reveal-item" data-delay="40">Small studio. No overhead.</p>
           <p class="reveal-item tools-line" data-delay="80">After Effects · Cinema 4D · Premiere Pro</p>
         </div>
       </div>
@@ -584,7 +585,7 @@
               </div>
               <div class="showcase-meta">
                 <span class="showcase-title">Raycast</span>
-                <p class="showcase-desc">Demo film for a developer productivity tool.</p>
+                <p class="showcase-desc">Product demo.</p>
               </div>
             </li>
 
@@ -605,7 +606,7 @@
               </div>
               <div class="showcase-meta">
                 <span class="showcase-title">Bezi</span>
-                <p class="showcase-desc">3D design in the browser. Build interactive prototypes without writing code.</p>
+                <p class="showcase-desc">Product demo.</p>
               </div>
             </li>
 
@@ -618,8 +619,8 @@
         <div class="block">
           <p class="label reveal-item">About</p>
           <div class="block-inner">
-            <p class="reveal-item">Most products are better than how they're shown. That's the gap I close.</p>
-            <p class="reveal-item" data-delay="30">Precise, technical, a bit obsessive about craft. Based in Stockholm — working with teams globally.</p>
+            <p class="reveal-item">Most products are better than how they're shown.</p>
+            <p class="reveal-item" data-delay="30">Precise, technical, a bit obsessive about craft. Based in Stockholm.</p>
           </div>
         </div>
       </div>
@@ -645,7 +646,7 @@
                   <span class="process-title">Direction</span>
                 </span>
               </div>
-              <p class="process-desc">A direction back to you in a few days. One call before anything moves.</p>
+              <p class="process-desc">A direction in a few days. One call before anything moves.</p>
             </li>
             <li class="process-item">
               <div class="process-row">
@@ -673,7 +674,7 @@
       <div class="reveal" data-delay="0">
         <div class="block">
           <p class="label reveal-item">Start a project</p>
-          <div class="block-inner" style="gap:20px;">
+          <div class="block-inner">
             <p class="reveal-item">Tell me what you're building.</p>
             <form class="form reveal-item" data-delay="30" id="contact-form" novalidate>
 
