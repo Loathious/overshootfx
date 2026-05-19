@@ -152,31 +152,9 @@
     }
     a:hover { opacity: 1; }
 
-    /* ── Serif accent ── */
-    .serif { font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-weight: normal; }
-
     /* ── Identity ── */
     .identity-name { font-weight: 400; font-size: 16px; }
     .identity-role { color: var(--fg-50); margin-top: 4px; }
-    .identity-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--fg-30);
-      font-size: 12px;
-      margin-top: 8px;
-    }
-    .status-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: rgba(100, 210, 130, 0.9);
-      animation: pulse-dot 2.4s ease-in-out infinite;
-      flex-shrink: 0;
-    }
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 0.5; transform: scale(1); box-shadow: 0 0 0 0 rgba(100,210,130,0); }
-      50%       { opacity: 1;   transform: scale(1.3); box-shadow: 0 0 0 4px rgba(100,210,130,0.12); }
-    }
 
     /* ── Tools line ── */
     .tools-line { color: var(--fg-30); font-size: 12px; letter-spacing: 0.01em; }
@@ -203,7 +181,7 @@
     .btn:hover { opacity: 1; background: var(--fg-30); }
 
     /* ── Showcase ── */
-    .showcase-list { list-style: none; display: flex; flex-direction: column; gap: 24px; }
+    .showcase-list { list-style: none; display: flex; flex-direction: column; gap: 24px; position: relative; }
     .showcase-item { display: flex; flex-direction: column; gap: 12px; }
 
     .video-wrap {
@@ -312,8 +290,21 @@
     .video-wrap:hover .mute-btn { opacity: 1; transform: translateY(0); }
 
     /* ── Showcase highlight ── */
-    .showcase-item { transition: opacity 0.2s ease-out; }
-    .showcase-list:hover .showcase-item { opacity: 0.4; }
+    .showcase-highlight {
+      position: absolute;
+      left: -12px; right: -12px;
+      background: var(--fg-05);
+      border-radius: 10px;
+      pointer-events: none;
+      opacity: 0;
+      transition:
+        top 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.2s ease-out;
+    }
+    .showcase-list:hover .showcase-highlight { opacity: 1; }
+    .showcase-item { transition: opacity 0.25s ease-out; }
+    .showcase-list:hover .showcase-item { opacity: 0.45; }
     .showcase-list:hover .showcase-item:hover,
     .showcase-list:hover .showcase-item.playing { opacity: 1; }
 
@@ -549,14 +540,13 @@
       <!-- Identity -->
       <div class="reveal" data-delay="0">
         <p class="identity-name">Alfred Gustafsson</p>
-        <p class="identity-role">Overshoot · Motion Designer · Stockholm</p>
-        <p class="identity-status"><span class="status-dot"></span>Available</p>
+        <p class="identity-role">Overshoot · Motion Designer</p>
       </div>
 
       <!-- Bio -->
       <div class="reveal" data-delay="60">
         <div class="block-inner">
-          <p class="reveal-item">I make <em class="serif">motion</em> for software products — demo films, launch videos, social ads.</p>
+          <p class="reveal-item">I make motion for software products — demo films, launch videos, social ads.</p>
           <p class="reveal-item" data-delay="40">Small studio. No overhead.</p>
           <p class="reveal-item tools-line" data-delay="80">After Effects · Cinema 4D · Premiere Pro</p>
         </div>
@@ -760,7 +750,7 @@
       <div class="reveal" data-delay="0">
         <footer>
           <div class="footer-links" style="gap:4px; opacity:0.7;">
-            <span>Made in Stockholm</span>
+            <span>Created w/ care</span>
             <span style="opacity:0.5;">·</span>
             <span>2026</span>
           </div>
@@ -863,6 +853,21 @@
       if (e.key === 'Escape' && lb.classList.contains('open')) closeLightbox();
     });
 
+    // ── Showcase sliding highlight ──
+    const showcaseList = document.querySelector('.showcase-list');
+    let hlEl = null;
+    if (showcaseList) {
+      hlEl = document.createElement('div');
+      hlEl.className = 'showcase-highlight';
+      showcaseList.prepend(hlEl);
+    }
+
+    function moveHighlight(item) {
+      if (!hlEl) return;
+      hlEl.style.top    = item.offsetTop + 'px';
+      hlEl.style.height = item.offsetHeight + 'px';
+    }
+
     // ── Video management (one at a time + mute) ──
     const ICON_MUTED = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 4.5h2L6 2.5v7L3.5 7.5H1.5V4.5z" fill="currentColor"/><path d="M8.5 4.5 11 7M11 4.5 8.5 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`;
     const ICON_SOUND = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 4.5h2L6 2.5v7L3.5 7.5H1.5V4.5z" fill="currentColor"/><path d="M8 4.8c.45.36.75.9.75 1.5s-.3 1.14-.75 1.5M9.5 3.3c.9.72 1.4 1.8 1.4 3s-.5 2.28-1.4 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
@@ -899,6 +904,8 @@
       const wrap    = item.querySelector('.video-wrap');
       const muteBtn = item.querySelector('.mute-btn');
 
+      item.addEventListener('mouseenter', () => moveHighlight(item));
+
       if (wrap) {
         wrap.addEventListener('mouseenter', () => setActiveItem(item));
         if (wrap.dataset.src) {
@@ -928,7 +935,7 @@
 
     // Activate first item on load
     const firstItem = document.querySelector('.showcase-item');
-    if (firstItem) setActiveItem(firstItem);
+    if (firstItem) { setActiveItem(firstItem); moveHighlight(firstItem); }
     updateMuteBtns();
 
     // ── Contact form ──
