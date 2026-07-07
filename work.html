@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Work · Alfred Gustafsson</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b0b0b'/><path d='M20 64 C 38 64, 40 30, 56 30 C 70 30, 70 48, 82 48' stroke='%23dedede' stroke-width='8' fill='none' stroke-linecap='round'/></svg>">
+  <meta name="description" content="All motion work by Alfred Gustafsson, working as Overshoot." />
+  <meta property="og:title" content="Work · Alfred Gustafsson" />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <style>
+    /* ============================================================
+       WORK — full listing page, shares tokens with index.html but
+       runs a much wider shell so the grid can breathe as a gallery
+       ============================================================ */
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0b0b0b;
+      --fg:        #dedede;
+      --muted:     #a1a1a1;
+      --faint:     #6b6b6b;
+      --border:    rgba(255,255,255,0.08);
+      --secondary:    #262626;
+      --secondary-fg: #fafafa;
+
+      --ease: cubic-bezier(0.19, 1, 0.22, 1);
+      --radius: 10px;
+      --radius-sm: 8px;
+      --radius-lg: 14px;
+
+      --outer-pad: 12px;
+      --fluid-col: clamp(0px, calc(20px + (80 * ((100vw - 450px) / (1024 - 450)))), 100px);
+      --shell-max: calc(720px + 160px); /* mobile/tablet: same width as the rest of the site */
+    }
+    @media (min-width: 1024px) {
+      /* desktop: a wide gallery shell, ~25% of viewport given to side margins */
+      :root { --shell-max: 75vw; }
+    }
+
+    html { -webkit-text-size-adjust: 100%; scrollbar-color: var(--faint) transparent; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    a.crumb { color: var(--muted); transition: color 0.2s var(--ease); }
+    a.crumb:hover { color: var(--fg); }
+    ::selection { background: rgba(255,255,255,0.16); color: #fff; }
+    :focus-visible { outline: 1px solid var(--muted); outline-offset: 2px; }
+
+    .outer { padding: 0 var(--outer-pad); }
+    .shell {
+      max-width: var(--shell-max);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: var(--fluid-col) 1fr var(--fluid-col);
+      min-height: 100vh;
+      border-left: 1px dashed var(--border);
+      border-right: 1px dashed var(--border);
+    }
+    .col {
+      grid-column: 2;
+      position: relative;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+
+    .rule { position: relative; }
+    .rule::before {
+      content: '';
+      position: absolute; top: 0; left: 50%;
+      width: 100vw; height: 1px;
+      transform: translateX(-50%);
+      background: var(--border);
+    }
+    .rule.dashed::before { background: none; border-top: 1px dashed var(--border); }
+
+    .corner { position: absolute; width: 12px; height: 12px; pointer-events: none; color: var(--faint); }
+    .corner::before, .corner::after { content: ''; position: absolute; background: currentColor; }
+    .corner::before { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
+    .corner::after  { left: 50%; top: 0; height: 100%; width: 1px; transform: translateX(-50%); }
+    .corner.tl { top: -6px; left: -6px; }
+    .corner.tr { top: -6px; right: -6px; }
+
+    .band { position: relative; }
+
+    /* ============================================================
+       BREADCRUMB HEADER
+       ============================================================ */
+    header.band {
+      margin-top: 48px;
+      padding: 12px;
+      display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+    @media (min-width: 768px) { header.band { padding: 24px 32px; } }
+    .crumbs { font-size: 13px; color: var(--muted); }
+    .crumbs .sep { margin: 0 6px; color: var(--faint); }
+    .crumbs .current { color: var(--fg); }
+
+    /* ============================================================
+       FULL WORK GRID
+       ============================================================ */
+    #all-work { padding: 32px 12px 56px; }
+    @media (min-width: 768px) { #all-work { padding: 32px 32px 56px; } }
+    .all-work-head { font-size: 16px; font-weight: 400; color: var(--fg); margin-bottom: 20px; }
+    .all-work-head sup { font-size: 0.6em; color: var(--muted); margin-left: 1px; }
+
+    .grid18 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 640px) { .grid18 { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 1024px) { .grid18 { grid-template-columns: 1fr 1fr 1fr; } }
+
+    .grid18 .tile {
+      opacity: 1;
+      transition: opacity 0.35s var(--ease), filter 0.35s var(--ease), border-color 0.2s var(--ease), transform 0.35s var(--ease);
+    }
+    .grid18.hovering .tile { opacity: 0.45; filter: saturate(0.75); }
+    .grid18.hovering .tile:hover { opacity: 1; filter: none; transform: scale(1.015); z-index: 2; }
+
+    .tile {
+      position: relative;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .tile:hover { border-color: var(--faint); }
+    .tile video, .tile img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .tile-caption {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: linear-gradient(0deg, rgba(0,0,0,0.55), transparent);
+      font-size: 11px;
+    }
+    .tile-caption .name { color: #fff; font-weight: 500; }
+    .tile-caption .tag { color: rgba(255,255,255,0.6); }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    footer.band { padding: 24px 12px 96px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    @media (min-width: 768px) { footer.band { padding: 24px 32px 96px; } }
+    footer.band .copy { font-size: 12px; color: var(--faint); }
+    footer.band .contact-link { font-size: 12px; color: var(--muted); cursor: pointer; transition: color 0.2s var(--ease); background: none; border: none; }
+    footer.band .contact-link:hover { color: var(--fg); }
+
+    .contact-wrap { position: relative; }
+    .contact-pop {
+      position: absolute; bottom: calc(100% + 10px); right: 0;
+      min-width: 220px;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      opacity: 0; transform: translateY(4px);
+      pointer-events: none;
+      transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+    }
+    .contact-pop.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .contact-pop-label {
+      display: block;
+      font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 6px;
+    }
+    .contact-pop-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .contact-pop-row span { font-size: 13px; color: var(--secondary-fg); }
+    .copy-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      vertical-align: -1px;
+      width: 18px; height: 18px;
+      background: none; border: none; padding: 0; margin: 0;
+      color: var(--fg); cursor: pointer;
+      transition: opacity 0.2s var(--ease);
+      opacity: 0.7;
+    }
+    .copy-icon:hover { opacity: 1; }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(8px);
+      background: var(--secondary); color: var(--secondary-fg); font-size: 12px; font-weight: 500;
+      padding: 8px 14px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      opacity: 0; pointer-events: none; white-space: nowrap; z-index: 300;
+      transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <div class="outer">
+   <div class="shell">
+    <div class="col">
+
+      <!-- ════════ BREADCRUMB ════════ -->
+      <header class="band rule dashed">
+        <div class="crumbs">
+          <a class="crumb" href="index.html">Alfred Gustafsson</a><span class="sep">/</span><span class="current">Work</span>
+        </div>
+      </header>
+
+      <!-- ════════ FULL WORK GRID ════════ -->
+      <section id="all-work" class="band">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <p class="all-work-head">Work<sup>2</sup></p>
+        <div class="grid18" id="work-grid">
+          <a class="tile" href="raycast.html">
+            <video src="media/raycast.mp4" autoplay loop muted playsinline preload="metadata"></video>
+            <div class="tile-caption"><span class="name">Raycast</span><span class="tag">Product demo</span></div>
+          </a>
+          <a class="tile" href="bezi.html">
+            <video src="media/bezi.mp4" autoplay loop muted playsinline preload="metadata"></video>
+            <div class="tile-caption"><span class="name">Bezi</span><span class="tag">Product demo</span></div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ════════ FOOTER ════════ -->
+      <footer class="band rule">
+        <span class="copy">© Alfred Gustafsson 2026</span>
+        <div class="contact-wrap">
+          <button type="button" class="contact-link" id="contact-btn">Contact</button>
+          <div class="contact-pop" id="contact-pop">
+            <span class="contact-pop-label">Email</span>
+            <div class="contact-pop-row">
+              <span>contact@overshootfx.com</span>
+              <button type="button" class="copy-icon" id="copy-btn" aria-label="Copy email">
+                <svg width="13" height="13" viewBox="0 0 20 20"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/><rect width="10" height="10" x="3" y="3" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" rx="2" ry="2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+   </div>
+  </div>
+
+  <script>
+    const EMAIL = 'contact@overshootfx.com';
+
+    function showToast(msg){
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('show'), 2200);
+    }
+    function copyEmail(){
+      navigator.clipboard.writeText(EMAIL).catch(()=>{
+        const el = Object.assign(document.createElement('textarea'), {value: EMAIL});
+        document.body.appendChild(el); el.select(); document.execCommand('copy'); el.remove();
+      });
+      showToast('Copied: ' + EMAIL);
+    }
+    document.getElementById('copy-btn').addEventListener('click', copyEmail);
+
+    /* ── Work grid: dim siblings on hover (video highlight); tiles are real links now ── */
+    const workGrid = document.getElementById('work-grid');
+    document.querySelectorAll('.tile').forEach(tile => {
+      tile.addEventListener('mouseenter', () => workGrid.classList.add('hovering'));
+      tile.addEventListener('mouseleave', () => workGrid.classList.remove('hovering'));
+    });
+
+    /* ── Contact popover ── */
+    const contactBtn = document.getElementById('contact-btn');
+    const contactPop = document.getElementById('contact-pop');
+    contactBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      contactPop.classList.toggle('open');
+    });
+    document.addEventListener('click', e => {
+      if (contactPop.classList.contains('open') && !contactPop.contains(e.target) && e.target !== contactBtn) {
+        contactPop.classList.remove('open');
+      }
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') contactPop.classList.remove('open'); });
+  </script>
+</body>
+</html>
