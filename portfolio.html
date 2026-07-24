@@ -194,89 +194,71 @@
        ============================================================ */
     header.band {
       margin-top: 48px;
-      padding: 12px;
+      /* bottom is trimmed against #bio's 56px top padding so the run from the
+         last sense to the first bio line lands around 70px: enough air that
+         the definition reads as part of the header, not the body */
+      padding: 12px 12px 16px;
     }
-    @media (min-width: 768px) { header.band { padding: 24px 32px; } }
+    @media (min-width: 768px) { header.band { padding: 24px 32px 16px; } }
 
     .id-row { display: block; }
-    /* the name leads, and now sits outside the card entirely */
     .id-name { display: block; font-size: 18px; font-weight: 600; line-height: 1.3; color: var(--fg); }
     @media (min-width: 768px) { .id-name { font-size: 21px; } }
 
     /* ============================================================
-       DEFINITION CARD
-       A spec sheet, not a UI card: hairline border, near-flat fill,
-       registration ticks straddling the corners so it joins the
-       dieline system the page already uses. No shadow, no glow,
-       no gradient, ever.
+       DEFINITION
+       Marginalia, not a component. The page states structure with
+       rules, crop marks and underlines and never draws a box around
+       anything, so this is set purely as quiet type in the same
+       column as everything else.
        ============================================================ */
-    .def-card {
-      position: relative;
-      margin-top: 20px;
-      max-width: 480px;
-      padding: 20px 18px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
-      /* the page runs 8-14px radii elsewhere; 4px keeps this reading as a
-         technical sheet without looking like a missed corner next to them */
-      border-radius: 4px;
-    }
-    @media (min-width: 768px) { .def-card { padding: 24px 28px; } }
+    .def { margin-top: 28px; }
 
-    /* same cross form, weight and colour as the page's crop marks, at half
-       their size, centred on the corner so they straddle the border */
-    .def-tick { position: absolute; width: 6px; height: 6px; color: var(--faint); pointer-events: none; }
-    .def-tick::before, .def-tick::after { content: ''; position: absolute; background: currentColor; }
-    .def-tick::before { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
-    .def-tick::after  { left: 50%; top: 0; height: 100%; width: 1px; transform: translateX(-50%); }
-    .def-tick.tl { top: -3px; left: -3px; }
-    .def-tick.tr { top: -3px; right: -3px; }
-    .def-tick.bl { bottom: -3px; left: -3px; }
-    .def-tick.br { bottom: -3px; right: -3px; }
-
-    /* the headword anchors the card, so it takes the full foreground back;
-       it stays below the name's size, which still leads the page */
+    /* the studio name, which doubles as the dictionary headword */
     .def-word {
       display: block;
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 1.2;
-      letter-spacing: -0.01em;
-      color: var(--fg);
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.25;
+      letter-spacing: -0.005em;
+      color: color-mix(in srgb, var(--fg) 90%, transparent);
     }
-    @media (min-width: 768px) { .def-word { font-size: 18px; } }
+    @media (min-width: 768px) { .def-word { font-size: 16px; } }
 
     .def-pron {
       display: block;
-      margin-top: 8px;
+      margin-top: 7px;
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11px;
       letter-spacing: 0.02em;
       color: color-mix(in srgb, var(--fg) 50%, transparent);
     }
     .def-pron .dot { margin: 0 0.4em; }
 
-    .def-senses { margin-top: 16px; }
+    /* narrower and dimmer than the bio, so the eye reaches the bio first */
+    .def-senses { margin-top: 15px; max-width: 52ch; }
     .def-sense {
       display: grid;
       /* fixed gutter: the hanging indent holds for wrapped lines too, so
          every sense shares one left text edge */
-      grid-template-columns: 24px 1fr;
-      font-size: 14px;
-      line-height: 1.6;
-      color: color-mix(in srgb, var(--fg) 75%, transparent);
+      grid-template-columns: 22px 1fr;
+      font-size: 13px;
+      line-height: 1.55;
+      color: color-mix(in srgb, var(--fg) 62%, transparent);
     }
     /* plain opacity only, staggered after the headword lands */
     .js .def-sense { opacity: 0; transition: opacity 0.3s var(--ease-out-plain); }
-    .def-sense + .def-sense { margin-top: 10px; }
+    .def-sense + .def-sense { margin-top: 9px; }
     .def-sense .n {
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11px;
       /* match the text's line box so the number sits on the first line */
-      line-height: calc(14px * 1.6);
-      color: color-mix(in srgb, var(--accent) 65%, transparent);
+      line-height: calc(13px * 1.55);
+      color: color-mix(in srgb, var(--fg) 45%, transparent);
     }
-    .def-sense i { font-style: italic; }
+    /* the italic's slant eats the following word space optically, so the
+       normal space in the markup needs a little help to read as one */
+    .def-sense i { font-style: italic; margin-right: 0.12em; }
     body.loaded .def-sense { opacity: 1; }
     body.loaded .def-sense:nth-child(1) { transition-delay: 0.48s; }
     body.loaded .def-sense:nth-child(2) { transition-delay: 0.55s; }
@@ -537,18 +519,6 @@
     body.loaded .id-row .id-name,
     body.loaded .def-word { transform: translateY(0); opacity: 1; }
 
-    /* the card itself never moves: its border, fill and ticks fade up in
-       place with plain opacity, behind the headword's arrival */
-    .def-card, .def-tick {
-      transition: border-color 0.5s var(--ease-out-plain),
-                  background-color 0.5s var(--ease-out-plain),
-                  opacity 0.5s var(--ease-out-plain);
-    }
-    .js .def-card { border-color: transparent; background-color: transparent; }
-    .js .def-tick { opacity: 0; }
-    body.loaded .def-card { border-color: var(--border); background-color: rgba(255,255,255,0.02); }
-    body.loaded .def-tick { opacity: 1; }
-
     /* ============================================================
        LIGHTBOX
        ============================================================ */
@@ -611,10 +581,8 @@
         </div>
         <!-- The definition. Home page only; it does not repeat anywhere else.
              The headword performs the principle it defines as it arrives. -->
-        <section class="def-card" id="def" aria-label="overshoot, definition">
-          <span class="def-tick tl" aria-hidden="true"></span><span class="def-tick tr" aria-hidden="true"></span>
-          <span class="def-tick bl" aria-hidden="true"></span><span class="def-tick br" aria-hidden="true"></span>
-          <span class="def-word">overshoot</span>
+        <section class="def" id="def" aria-label="overshoot, definition">
+          <span class="def-word">Overshoot</span>
           <span class="def-pron">/&#x02CC;o&#x028A;v&#x0259;r&#x02C8;&#x0283;u&#x02D0;t/<span class="dot">&#183;</span>verb</span>
           <div class="def-senses">
             <p class="def-sense"><span class="n">1.</span><span>to go beyond an intended target or limit, especially unintentionally.</span></p>
