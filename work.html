@@ -203,8 +203,19 @@
       transition: opacity 0.35s var(--ease-out-plain), filter 0.35s var(--ease-out-plain),
                   border-color 0.2s var(--ease-out-plain), transform 0.18s var(--ease-out-plain);
     }
-    .grid18.hovering .tile { opacity: 0.45; filter: saturate(0.75); }
-    .grid18.hovering .tile:hover { opacity: 1; filter: none; z-index: 2; }
+    /* video spotlight: hovering a tile dims the whole page, not just its
+       siblings. The scrim is a fixed child of the grid: fixed items are
+       pulled out of grid layout entirely (no empty cell, no reflow), and
+       cover the full viewport regardless of where they sit in the DOM. */
+    .spotlight {
+      position: fixed; inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 40;
+      transition: opacity 0.35s var(--ease-out-plain);
+    }
+    .grid18.hovering .spotlight { opacity: 0.4; }
 
     .tile {
       position: relative;
@@ -305,6 +316,8 @@
     /* work cards: overshoot in, plain out */
     .grid18 .tile:hover {
       transform: scale(1.02);
+      /* above the page scrim, so the hovered video stays at full brightness */
+      z-index: 50;
       transition: transform 0.22s var(--ease-overshoot), opacity 0.35s var(--ease-out-plain),
                   filter 0.35s var(--ease-out-plain), border-color 0.2s var(--ease-out-plain);
     }
@@ -389,6 +402,7 @@
             <video data-lazy-src="media/bezi.mp4" loop muted playsinline preload="none" poster="media/posters/bezi.jpg"></video>
             <div class="tile-caption"><span class="name">Bezi</span><span class="tag">Ad concept</span></div>
           </a>
+          <div class="spotlight" aria-hidden="true"></div>
         </div>
       </section>
 
@@ -472,7 +486,13 @@
     document.querySelectorAll('.tile video[data-lazy-src]').forEach(v => lazyObserver.observe(v));
 
     function playTile(v){ if (v && v.src) v.play().catch(()=>{}); }
-    function pauseTile(v){ if (v && !v.paused) v.pause(); }
+    function pauseTile(v){
+      if (!v) return;
+      v.pause();
+      /* rewind so the next hover always starts the clip fresh, rather
+         than resuming wherever the last hover happened to leave off */
+      try { if (v.currentTime !== 0) v.currentTime = 0; } catch {}
+    }
 
     if (CAN_HOVER.matches){
       /* desktop: play on hover, pause on leave */

@@ -170,8 +170,9 @@
     .crumbs .current { color: var(--fg); }
     .crumbs-date { font-size: 13px; color: var(--faint); }
 
-    #viewer { padding: 32px 12px 56px; }
-    @media (min-width: 768px) { #viewer { padding: 32px 32px 56px; } }
+    /* header-to-content gap matches --head-gap everywhere else on the site */
+    #viewer { padding: var(--head-gap) 12px 56px; }
+    @media (min-width: 768px) { #viewer { padding: var(--head-gap) 32px 56px; } }
     .viewer-frame {
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
