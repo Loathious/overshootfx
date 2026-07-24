@@ -6,9 +6,9 @@
   <title>Alfred Gustafsson │ Overshoot</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b0b0b'/><path d='M20 64 C 38 64, 40 30, 56 30 C 70 30, 70 48, 82 48' stroke='%23dedede' stroke-width='8' fill='none' stroke-linecap='round'/></svg>">
   <link rel="canonical" href="https://overshootfx.com/portfolio" />
-  <meta name="description" content="I make motion for software: demo films, launch videos, product animation. Alfred Gustafsson, working as Overshoot." />
+  <meta name="description" content="I make motion for software: demo films, launch videos, and product animation that moves the way a good interface feels to use. Alfred Gustafsson, working as Overshoot." />
   <meta property="og:title" content="Alfred Gustafsson · Overshoot" />
-  <meta property="og:description" content="I make motion for software: demo films, launch videos, product animation." />
+  <meta property="og:description" content="I make motion for software: demo films, launch videos, and product animation that moves the way a good interface feels to use." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://overshootfx.com/portfolio" />
   <meta property="og:image" content="https://overshootfx.com/media/og.png" />
@@ -199,66 +199,84 @@
     @media (min-width: 768px) { header.band { padding: 24px 32px; } }
 
     .id-row { display: block; }
-    /* the name leads: boldest, brightest. */
+    /* the name leads, and now sits outside the card entirely */
     .id-name { display: block; font-size: 18px; font-weight: 600; line-height: 1.3; color: var(--fg); }
-    /* the handle is muted, the way it was before the definition existed,
-       so it reads as a second, separate line rather than a name continuing.
-       It still doubles as the dictionary headword the definition hangs off,
-       so it keeps the name's weight, just not its colour or its distance. */
-    .id-handle {
-      display: block;
-      margin-top: 9px;
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.25;
-      letter-spacing: -0.01em;
-      color: var(--muted);
-    }
-    @media (min-width: 768px) {
-      .id-name { font-size: 21px; }
-      .id-handle { font-size: 17px; margin-top: 10px; }
-    }
+    @media (min-width: 768px) { .id-name { font-size: 21px; } }
 
     /* ============================================================
-       DEFINITION: a dictionary entry that happens to be true.
-       Pure typography: no card, no border, no background, no icon.
-       Sits quieter than the bio on purpose.
+       DEFINITION CARD
+       A spec sheet, not a UI card: hairline border, near-flat fill,
+       registration ticks straddling the corners so it joins the
+       dieline system the page already uses. No shadow, no glow,
+       no gradient, ever.
        ============================================================ */
-    /* Sits tight under the handle so the two read as one entry.
-       Colours come from the palette: the senses read like the bio (--muted),
-       the pronunciation and sense numbers like other meta text (--faint). */
-    .def { margin-top: 6px; }
+    .def-card {
+      position: relative;
+      margin-top: 20px;
+      max-width: 480px;
+      padding: 20px 18px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      /* the page runs 8-14px radii elsewhere; 4px keeps this reading as a
+         technical sheet without looking like a missed corner next to them */
+      border-radius: 4px;
+    }
+    @media (min-width: 768px) { .def-card { padding: 24px 28px; } }
+
+    /* same cross form, weight and colour as the page's crop marks, at half
+       their size, centred on the corner so they straddle the border */
+    .def-tick { position: absolute; width: 6px; height: 6px; color: var(--faint); pointer-events: none; }
+    .def-tick::before, .def-tick::after { content: ''; position: absolute; background: currentColor; }
+    .def-tick::before { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
+    .def-tick::after  { left: 50%; top: 0; height: 100%; width: 1px; transform: translateX(-50%); }
+    .def-tick.tl { top: -3px; left: -3px; }
+    .def-tick.tr { top: -3px; right: -3px; }
+    .def-tick.bl { bottom: -3px; left: -3px; }
+    .def-tick.br { bottom: -3px; right: -3px; }
+
+    /* the headword anchors the card, so it takes the full foreground back;
+       it stays below the name's size, which still leads the page */
+    .def-word {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      color: var(--fg);
+    }
+    @media (min-width: 768px) { .def-word { font-size: 18px; } }
 
     .def-pron {
       display: block;
+      margin-top: 8px;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 0.02em;
-      color: var(--faint);
+      color: color-mix(in srgb, var(--fg) 50%, transparent);
     }
     .def-pron .dot { margin: 0 0.4em; }
 
-    .def-senses { margin-top: 10px; max-width: 44ch; }
+    .def-senses { margin-top: 16px; }
     .def-sense {
       display: grid;
-      grid-template-columns: 1.7em 1fr;
-      font-size: 13px;
-      line-height: 1.45;
-      color: var(--muted);
+      /* fixed gutter: the hanging indent holds for wrapped lines too, so
+         every sense shares one left text edge */
+      grid-template-columns: 24px 1fr;
+      font-size: 14px;
+      line-height: 1.6;
+      color: color-mix(in srgb, var(--fg) 75%, transparent);
     }
-    /* plain opacity only, staggered after the word lands */
+    /* plain opacity only, staggered after the headword lands */
     .js .def-sense { opacity: 0; transition: opacity 0.3s var(--ease-out-plain); }
-    /* Bigger than the 1.45 line-height above: a wrapped second line of one
-       sense must sit closer than the gap to the NEXT sense, or the two
-       read as equally related and the list looks like it has no rhythm. */
-    .def-sense + .def-sense { margin-top: 9px; }
+    .def-sense + .def-sense { margin-top: 10px; }
     .def-sense .n {
       font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--faint);
+      font-size: 12px;
+      /* match the text's line box so the number sits on the first line */
+      line-height: calc(14px * 1.6);
+      color: color-mix(in srgb, var(--accent) 65%, transparent);
     }
     .def-sense i { font-style: italic; }
-    /* the senses arrive after the headword has landed and settled */
     body.loaded .def-sense { opacity: 1; }
     body.loaded .def-sense:nth-child(1) { transition-delay: 0.48s; }
     body.loaded .def-sense:nth-child(2) { transition-delay: 0.55s; }
@@ -508,15 +526,28 @@
     }
     .reveal.in .head-anim { transform: translateY(0); }
 
-    /* name block: same arrival, but on load rather than on scroll */
-    .js .id-row .id-name, .js .id-row .id-handle {
+    /* name and headword: same arrival, on load rather than on scroll.
+       These two are the only things in this block that move. */
+    .js .id-row .id-name, .js .def-word {
       transform: translateY(10px);
       opacity: 0;
       transition: transform 0.42s var(--ease-overshoot), opacity 0.42s var(--ease-out-plain);
     }
-    .js .id-row .id-handle { transition-delay: 0.06s; }
+    .js .def-word { transition-delay: 0.06s; }
     body.loaded .id-row .id-name,
-    body.loaded .id-row .id-handle { transform: translateY(0); opacity: 1; }
+    body.loaded .def-word { transform: translateY(0); opacity: 1; }
+
+    /* the card itself never moves: its border, fill and ticks fade up in
+       place with plain opacity, behind the headword's arrival */
+    .def-card, .def-tick {
+      transition: border-color 0.5s var(--ease-out-plain),
+                  background-color 0.5s var(--ease-out-plain),
+                  opacity 0.5s var(--ease-out-plain);
+    }
+    .js .def-card { border-color: transparent; background-color: transparent; }
+    .js .def-tick { opacity: 0; }
+    body.loaded .def-card { border-color: var(--border); background-color: rgba(255,255,255,0.02); }
+    body.loaded .def-tick { opacity: 1; }
 
     /* ============================================================
        LIGHTBOX
@@ -577,17 +608,18 @@
       <header class="band rule dashed">
         <div class="id-row">
           <span class="id-name">Alfred Gustafsson</span>
-          <span class="id-handle">Overshoot</span>
         </div>
         <!-- The definition. Home page only; it does not repeat anywhere else.
-             The handle above is the headword, so the entry hangs off it
-             rather than printing "overshoot" a second time. The headword
-             performs the principle it defines as it arrives. -->
-        <section class="def" id="def" aria-label="overshoot, definition">
+             The headword performs the principle it defines as it arrives. -->
+        <section class="def-card" id="def" aria-label="overshoot, definition">
+          <span class="def-tick tl" aria-hidden="true"></span><span class="def-tick tr" aria-hidden="true"></span>
+          <span class="def-tick bl" aria-hidden="true"></span><span class="def-tick br" aria-hidden="true"></span>
+          <span class="def-word">overshoot</span>
           <span class="def-pron">/&#x02CC;o&#x028A;v&#x0259;r&#x02C8;&#x0283;u&#x02D0;t/<span class="dot">&#183;</span>verb</span>
           <div class="def-senses">
-            <p class="def-sense"><span class="n">1.</span><span><i>(animation)</i> to let a value pass its target and settle back, giving the movement weight.</span></p>
-            <p class="def-sense"><span class="n">2.</span><span><i>(this studio)</i> standard practice.</span></p>
+            <p class="def-sense"><span class="n">1.</span><span>to go beyond an intended target or limit, especially unintentionally.</span></p>
+            <p class="def-sense"><span class="n">2.</span><span><i>(animation)</i> of a value: to pass its target and settle back, imitating the momentum of a physical object.</span></p>
+            <p class="def-sense"><span class="n">3.</span><span><i>(this studio)</i> standard practice.</span></p>
           </div>
         </section>
       </header>
@@ -595,11 +627,9 @@
       <!-- ════════ BIO ════════ -->
       <section id="bio" class="band rule reveal">
         <span class="corner tl"></span><span class="corner tr"></span>
-        <p>I make motion for software: demo films, launch videos, product animation. The name comes from the principle above.</p>
-        <p>Everything here is animated by hand in After Effects, mostly on real interfaces rebuilt layer by layer, so the motion behaves the way the product does. No templates, no preset packs.</p>
-        <p>I run Overshoot from Stockholm, async and in writing. Send a paragraph about what you're building and you'll hear back within a day.</p>
-        <p><a class="link" href="mailto:contact@overshootfx.com">contact@overshootfx.com</a> <button type="button" class="copy-icon" id="copy-inline" aria-label="Copy email address"><svg class="ico-copy" width="13" height="13" viewBox="0 0 20 20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/><rect width="10" height="10" x="3" y="3" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" rx="2" ry="2"/></svg><svg class="ico-check" width="13" height="13" viewBox="0 0 20 20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="m4 10.5 4 4 8-9"/></svg></button></p>
-        <p>Find me on <a class="link ext" href="https://x.com/overshootvfx" target="_blank" rel="noopener noreferrer">X<svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a> and <a class="link ext" href="https://tiktok.com/@overshootvfx" target="_blank" rel="noopener noreferrer">TikTok<svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>.</p>
+        <p>I make motion for software: demo films, launch videos, and product animation that moves the way a good interface feels to use. Most products do something clever in their first few seconds. Getting that across before someone clicks away is the part I handle.</p>
+        <p>I work as Overshoot, mostly with founders and small product teams. Everything is animated by hand in After Effects, often on real interfaces rebuilt layer by layer. If your product is better than its demo, write me: <a class="link" href="mailto:contact@overshootfx.com">contact@overshootfx.com</a> <button type="button" class="copy-icon" id="copy-inline" aria-label="Copy email address"><svg class="ico-copy" width="13" height="13" viewBox="0 0 20 20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/><rect width="10" height="10" x="3" y="3" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" rx="2" ry="2"/></svg><svg class="ico-check" width="13" height="13" viewBox="0 0 20 20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="m4 10.5 4 4 8-9"/></svg></button></p>
+        <p>Based in Stockholm. Async, in writing, replies within a day. Find me on <a class="link ext" href="https://x.com/overshootvfx" target="_blank" rel="noopener noreferrer">X<svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a> and <a class="link ext" href="https://tiktok.com/@overshootvfx" target="_blank" rel="noopener noreferrer">TikTok<svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>.</p>
       </section>
 
       <!-- ════════ WORK ════════ -->
