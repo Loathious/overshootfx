@@ -235,34 +235,35 @@
     }
     .def-pron .dot { margin: 0 0.4em; }
 
-    /* narrower and dimmer than the bio, so the eye reaches the bio first */
-    .def-senses { margin-top: 15px; max-width: 52ch; }
-    .def-sense {
-      display: grid;
-      /* fixed gutter: the hanging indent holds for wrapped lines too, so
-         every sense shares one left text edge */
-      grid-template-columns: 22px 1fr;
+    /* Senses run in as one block, the way a print entry sets them, rather
+       than stacking as a list. Narrower and dimmer than the bio, so the
+       eye reaches the bio first. */
+    .def-senses {
+      margin-top: 10px;
+      max-width: 60ch;
       font-size: 13px;
-      line-height: 1.55;
+      line-height: 1.6;
       color: color-mix(in srgb, var(--fg) 62%, transparent);
     }
-    /* plain opacity only, staggered after the headword lands */
-    .js .def-sense { opacity: 0; transition: opacity 0.3s var(--ease-out-plain); }
-    .def-sense + .def-sense { margin-top: 9px; }
-    .def-sense .n {
+    .def-senses .n {
       font-family: var(--font-mono);
       font-size: 11px;
-      /* match the text's line box so the number sits on the first line */
-      line-height: calc(13px * 1.55);
-      color: color-mix(in srgb, var(--fg) 45%, transparent);
+      color: color-mix(in srgb, var(--fg) 47%, transparent);
+      /* spacing is margin, never literal spaces: the markup runs tight so
+         a number can never be left stranded at the end of a line */
+      margin-right: 0.3em;
     }
+    /* The gap before senses 2 and 3 is a TRAILING margin on a spacer, not a
+       leading margin on the number. A leading margin still renders when its
+       number happens to start a line, which indents that line; a trailing one
+       lands at the end of the previous line, where it costs nothing. */
+    .def-senses .sp { margin-right: 0.6em; }
     /* the italic's slant eats the following word space optically, so the
        normal space in the markup needs a little help to read as one */
-    .def-sense i { font-style: italic; margin-right: 0.12em; }
-    body.loaded .def-sense { opacity: 1; }
-    body.loaded .def-sense:nth-child(1) { transition-delay: 0.48s; }
-    body.loaded .def-sense:nth-child(2) { transition-delay: 0.55s; }
-    body.loaded .def-sense:nth-child(3) { transition-delay: 0.62s; }
+    .def-senses i { font-style: italic; margin-right: 0.12em; }
+    /* one plain fade for the whole block, after the headword lands */
+    .js .def-senses { opacity: 0; transition: opacity 0.3s var(--ease-out-plain); }
+    body.loaded .def-senses { opacity: 1; transition-delay: 0.48s; }
 
     /* ============================================================
        BIO
@@ -584,11 +585,11 @@
         <section class="def" id="def" aria-label="overshoot, definition">
           <span class="def-word">Overshoot</span>
           <span class="def-pron">/&#x02CC;o&#x028A;v&#x0259;r&#x02C8;&#x0283;u&#x02D0;t/<span class="dot">&#183;</span>verb</span>
-          <div class="def-senses">
-            <p class="def-sense"><span class="n">1.</span><span>to go beyond an intended target or limit, especially unintentionally.</span></p>
-            <p class="def-sense"><span class="n">2.</span><span><i>(animation)</i> of a value: to pass its target and settle back, imitating the momentum of a physical object.</span></p>
-            <p class="def-sense"><span class="n">3.</span><span><i>(this studio)</i> standard practice.</span></p>
-          </div>
+          <!-- Run-in, as a print entry sets it. No literal whitespace around
+               the numbers: the gaps are margins, and the <wbr> before each
+               number is the only break opportunity, so a line can start on a
+               number but never end on one. -->
+          <p class="def-senses"><span class="n">1.</span>to go beyond an intended target or limit, especially unintentionally.<span class="sp"></span><wbr><span class="n">2.</span><i>(animation)</i> of a value: to pass its target and settle back, imitating the momentum of a physical object.<span class="sp"></span><wbr><span class="n">3.</span><i>(this studio)</i> standard practice.</p>
         </section>
       </header>
 
