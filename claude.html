@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Work │ Overshoot</title>
+  <title>Claude │ Overshoot</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b0b0b'/><path d='M20 64 C 38 64, 40 30, 56 30 C 70 30, 70 48, 82 48' stroke='%23dedede' stroke-width='8' fill='none' stroke-linecap='round'/></svg>">
-  <link rel="canonical" href="https://overshootfx.com/work" />
-  <meta name="description" content="Motion for software: demo films, launch videos, product animation. The full list of work by Alfred Gustafsson, working as Overshoot." />
-  <meta property="og:title" content="Work · Alfred Gustafsson" />
-  <meta property="og:description" content="Motion for software: demo films, launch videos, product animation." />
+  <link rel="canonical" href="https://overshootfx.com/claude" />
+  <meta name="description" content="Claude, ad concept. Motion for software by Alfred Gustafsson, working as Overshoot." />
+  <meta property="og:title" content="Claude · Alfred Gustafsson" />
+  <meta property="og:description" content="Claude, ad concept. Motion for software by Alfred Gustafsson." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://overshootfx.com/work" />
+  <meta property="og:url" content="https://overshootfx.com/claude" />
   <meta property="og:image" content="https://overshootfx.com/media/og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -22,11 +22,6 @@
   <!-- Entrances start from opacity 0, so they are gated on JS being alive. -->
   <script>document.documentElement.classList.add('js');</script>
   <style>
-    /* ============================================================
-       WORK full listing page, shares tokens with index.html but
-       runs a much wider shell so the grid can breathe as a gallery
-       ============================================================ */
-
     /* Geist / Geist Mono, self-hosted, no third-party requests. Variable
        weight axis, so one file per family per subset covers 400 through 600. */
     @font-face {
@@ -90,13 +85,9 @@
       --radius-sm: 8px;
       --radius-lg: 14px;
 
+      --content-max: 720px;
       --outer-pad: 12px;
       --fluid-col: clamp(0px, calc(20px + (80 * ((100vw - 450px) / (1024 - 450)))), 100px);
-      --shell-max: calc(720px + 160px); /* mobile/tablet: same width as the rest of the site */
-    }
-    @media (min-width: 1024px) {
-      /* desktop: a wide gallery shell, ~25% of viewport given to side margins */
-      :root { --shell-max: 75vw; }
     }
 
     html { -webkit-text-size-adjust: 100%; scrollbar-color: var(--faint) transparent; }
@@ -124,7 +115,7 @@
        (not hidden) keeps this from becoming a scroll container. */
     .outer { padding: 0 var(--outer-pad); overflow-x: clip; }
     .shell {
-      max-width: var(--shell-max);
+      max-width: calc(var(--content-max) + 160px);
       margin: 0 auto;
       display: grid;
       grid-template-columns: var(--fluid-col) 1fr var(--fluid-col);
@@ -158,9 +149,6 @@
 
     .band { position: relative; }
 
-    /* ============================================================
-       BREADCRUMB HEADER
-       ============================================================ */
     header.band {
       margin-top: 48px;
       padding: 12px;
@@ -170,62 +158,19 @@
     .crumbs { font-size: 13px; color: var(--muted); }
     .crumbs .sep { margin: 0 6px; color: var(--faint); }
     .crumbs .current { color: var(--fg); }
+    .crumbs-date { font-size: 13px; color: var(--faint); }
 
-    /* ============================================================
-       FULL WORK GRID
-       ============================================================ */
-    #all-work { padding: 32px 12px 56px; }
-    @media (min-width: 768px) { #all-work { padding: 32px 32px 56px; } }
-    .all-work-head { font-size: 16px; font-weight: 400; color: var(--fg); margin-bottom: 20px; }
-    .all-work-head sup { font-size: 0.6em; color: var(--muted); margin-left: 1px; }
-
-    .grid18 {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-    @media (min-width: 640px) { .grid18 { grid-template-columns: 1fr 1fr; } }
-    @media (min-width: 1024px) { .grid18 { grid-template-columns: 1fr 1fr 1fr; } }
-
-    .grid18 .tile {
-      opacity: 1;
-      /* exit: plain, and slightly faster than the entrance */
-      transition: opacity 0.35s var(--ease-out-plain), filter 0.35s var(--ease-out-plain),
-                  border-color 0.2s var(--ease-out-plain), transform 0.18s var(--ease-out-plain);
-    }
-    .grid18.hovering .tile { opacity: 0.45; filter: saturate(0.75); }
-    .grid18.hovering .tile:hover { opacity: 1; filter: none; z-index: 2; }
-
-    .tile {
-      position: relative;
-      background: rgba(255,255,255,0.03);
+    #viewer { padding: 32px 12px 56px; }
+    @media (min-width: 768px) { #viewer { padding: 32px 32px 56px; } }
+    .viewer-frame {
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      aspect-ratio: 16 / 9;
       overflow: hidden;
-      cursor: pointer;
+      background: #000;
     }
-    .tile:hover { border-color: var(--faint); }
-    .tile video, .tile img {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .tile-caption {
-      position: absolute; left: 0; right: 0; bottom: 0;
-      display: flex; justify-content: space-between; align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      background: linear-gradient(0deg, rgba(0,0,0,0.55), transparent);
-      font-size: 11px;
-    }
-    .tile-caption .name { color: #fff; font-weight: 500; }
-    .tile-caption .tag { color: rgba(255,255,255,0.6); }
+    .viewer-frame video { display: block; width: 100%; height: auto; background: #000; }
+    .viewer-meta { display: flex; justify-content: space-between; align-items: baseline; margin-top: 14px; font-size: 12px; color: var(--muted); }
 
-    /* ============================================================
-       FOOTER
-       ============================================================ */
     footer.band { padding: 24px 12px 96px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     @media (min-width: 768px) { footer.band { padding: 24px 32px 96px; } }
     footer.band .copy { font-size: 12px; color: var(--faint); }
@@ -338,32 +283,30 @@
       * { scroll-behavior: auto !important; }
     }
 
-    /* ============================================================
-       GALLERY STAGGER
-       The grid arrives one card at a time on load, 50ms apart.
-       ============================================================ */
-    .js .grid18 .tile {
-      transform: translateY(12px);
+    /* title and media arrive together on load, media a beat later */
+    .js .crumbs, .js .crumbs-date {
+      transform: translateY(10px);
       opacity: 0;
       transition: transform 0.42s var(--ease-overshoot), opacity 0.42s var(--ease-out-plain);
     }
-    body.loaded .grid18 .tile { transform: translateY(0); opacity: 1; }
-    body.loaded .grid18 .tile:nth-child(1) { transition-delay: 0s; }
-    body.loaded .grid18 .tile:nth-child(2) { transition-delay: 0.05s; }
-    body.loaded .grid18 .tile:nth-child(3) { transition-delay: 0.10s; }
-    body.loaded .grid18 .tile:nth-child(4) { transition-delay: 0.15s; }
-    body.loaded .grid18 .tile:nth-child(5) { transition-delay: 0.20s; }
-    body.loaded .grid18 .tile:nth-child(6) { transition-delay: 0.25s; }
-    /* once landed, hover owns the transform again */
-    body.loaded .grid18 .tile:hover {
-      transform: scale(1.02);
-      transition: transform 0.22s var(--ease-overshoot), opacity 0.35s var(--ease-out-plain),
-                  filter 0.35s var(--ease-out-plain), border-color 0.2s var(--ease-out-plain);
-      transition-delay: 0s;
+    .js .crumbs-date { transition-delay: 0.05s; }
+    body.loaded .crumbs, body.loaded .crumbs-date { transform: translateY(0); opacity: 1; }
+
+    .js .viewer-frame {
+      transform: translateY(12px);
+      opacity: 0;
+      transition: transform 0.45s var(--ease-overshoot), opacity 0.45s var(--ease-out-plain);
+      transition-delay: 0.1s;
     }
+    body.loaded .viewer-frame { transform: translateY(0); opacity: 1; }
+
     @media (prefers-reduced-motion: reduce) {
-      body.loaded .grid18 .tile,
-      body.loaded .grid18 .tile:hover { transform: none !important; transition-delay: 0s !important; }
+      .crumbs, .crumbs-date, .viewer-frame {
+        transform: none !important;
+        opacity: 1 !important;
+        transition: opacity 0.2s linear !important;
+        transition-delay: 0s !important;
+      }
     }
   </style>
 </head>
@@ -375,37 +318,23 @@
    <div class="shell">
     <div class="col">
 
-      <!-- ════════ BREADCRUMB ════════ -->
       <header class="band rule dashed">
         <div class="crumbs">
-          <a class="crumb" href="portfolio.html">Alfred Gustafsson</a><span class="sep">/</span><span class="current">Work</span>
+          <a class="crumb" href="portfolio.html">Alfred Gustafsson</a><span class="sep">/</span><a class="crumb" href="work.html">Work</a><span class="sep">/</span><span class="current">Claude</span>
         </div>
+        <span class="crumbs-date">2026</span>
       </header>
 
-      <!-- ════════ FULL WORK GRID ════════ -->
-      <section id="all-work" class="band">
-        <p class="all-work-head"><span class="head-anim">Work<sup id="work-count" aria-hidden="true"></sup></span></p>
-        <div class="grid18" id="work-grid">
-          <a class="tile" href="raycast.html">
-            <video src="media/raycast.mp4" loop muted playsinline preload="metadata" poster="media/posters/raycast.jpg"></video>
-            <div class="tile-caption"><span class="name">Raycast</span><span class="tag">Ad concept</span></div>
-          </a>
-          <a class="tile" href="claude.html">
-            <video src="media/claude.mp4" loop muted playsinline preload="metadata" poster="media/posters/claude.jpg"></video>
-            <div class="tile-caption"><span class="name">Claude</span><span class="tag">Ad concept</span></div>
-          </a>
-          <a class="tile" href="polished-snow.html">
-            <video data-lazy-src="media/polished-snow.mp4" loop muted playsinline preload="none" poster="media/posters/polished-snow.jpg"></video>
-            <div class="tile-caption"><span class="name">Polished Snow</span><span class="tag">Logo animation</span></div>
-          </a>
-          <a class="tile" href="bezi.html">
-            <video data-lazy-src="media/bezi.mp4" loop muted playsinline preload="none" poster="media/posters/bezi.jpg"></video>
-            <div class="tile-caption"><span class="name">Bezi</span><span class="tag">Ad concept</span></div>
-          </a>
+      <section id="viewer" class="band">
+        <div class="viewer-frame">
+          <video src="media/claude.mp4" controls autoplay loop muted playsinline preload="metadata" poster="media/posters/claude.jpg"></video>
+        </div>
+        <div class="viewer-meta">
+          <span>Claude</span>
+          <span>Ad concept · 2026</span>
         </div>
       </section>
 
-      <!-- ════════ FOOTER ════════ -->
       <footer class="band rule">
         <span class="copy">© Alfred Gustafsson 2026</span>
         <div class="contact-wrap">
@@ -428,7 +357,6 @@
 
   <script>
     const EMAIL = 'contact@overshootfx.com';
-    const CAN_HOVER = window.matchMedia('(hover: hover) and (pointer: fine)');
 
     /* entrances, once, on load */
     requestAnimationFrame(() => document.body.classList.add('loaded'));
@@ -460,52 +388,6 @@
     document.querySelectorAll('.copy-icon').forEach(btn => {
       btn.addEventListener('click', e => { e.stopPropagation(); copyEmail(btn); });
     });
-
-    /* ── Work grid ── */
-    const workGrid = document.getElementById('work-grid');
-    const tiles = Array.from(document.querySelectorAll('.tile'));
-
-    /* superscript derived from the cards actually on the page */
-    const workCount = document.getElementById('work-count');
-    if (workCount) workCount.textContent = String(tiles.length);
-
-    /* below-the-fold videos attach their source on approach */
-    const lazyObserver = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (!e.isIntersecting) return;
-        const v = e.target;
-        if (v.dataset.lazySrc){
-          v.src = v.dataset.lazySrc;
-          v.preload = 'metadata';
-          delete v.dataset.lazySrc;
-        }
-        lazyObserver.unobserve(v);
-      });
-    }, { rootMargin: '200px 0px' });
-    document.querySelectorAll('.tile video[data-lazy-src]').forEach(v => lazyObserver.observe(v));
-
-    function playTile(v){ if (v && v.src) v.play().catch(()=>{}); }
-    function pauseTile(v){ if (v && !v.paused) v.pause(); }
-
-    if (CAN_HOVER.matches){
-      /* desktop: play on hover, pause on leave */
-      tiles.forEach(tile => {
-        const v = tile.querySelector('video');
-        tile.addEventListener('mouseenter', () => { workGrid.classList.add('hovering'); playTile(v); });
-        tile.addEventListener('mouseleave', () => { workGrid.classList.remove('hovering'); pauseTile(v); });
-        tile.addEventListener('focus', () => playTile(v));
-        tile.addEventListener('blur', () => pauseTile(v));
-      });
-    } else {
-      /* touch: play while in view, pause when it leaves */
-      const playObserver = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          const v = e.target.querySelector('video');
-          if (e.isIntersecting) playTile(v); else pauseTile(v);
-        });
-      }, { threshold: 0.5 });
-      tiles.forEach(tile => playObserver.observe(tile));
-    }
 
     /* ── Contact popover: focus returns to the trigger, Tab stays inside ── */
     const contactBtn = document.getElementById('contact-btn');

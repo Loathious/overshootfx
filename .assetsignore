@@ -1,0 +1,14 @@
+# Files and folders that should not be published to the live site.
+# Wrangler uploads everything under assets.directory (".") except these.
+.wrangler/
+.git/
+.vercel/
+.claude/
+.playwright-mcp/
+.gitignore
+.vercelignore
+.assetsignore
+vercel.json
+wrangler.jsonc
+Deadsimplesites inspiration gallery/
+OLD WEBSITE/
