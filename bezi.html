@@ -76,11 +76,21 @@
       --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
       /* ── Motion tokens. Every animation on the site uses one of these two. ──
-         --ease-overshoot passes its target once (peak ~5% past) and settles.
+         --ease-overshoot passes its target once (peak ~25% past) and settles.
          It is for TRANSFORMS ONLY: translate, scale, rotate.
-         --ease-out-plain is for every exit, reverse, opacity, colour and size. */
-      --ease-overshoot: cubic-bezier(0.22, 1.0, 0.36, 1.16);
+         --ease-out-plain is for every exit, reverse, opacity, colour and size.
+
+         Motion plays regardless of prefers-reduced-motion. On Windows that
+         flag is tied to the "show animations" performance toggle, which is
+         off for a large number of people who have no motion sensitivity, and
+         the overshoot is the point of the site. Amplitudes are small and
+         nothing loops, scroll-jacks or parallaxes. */
+      --ease-overshoot: cubic-bezier(0.34, 2.0, 0.64, 1);
       --ease-out-plain: cubic-bezier(0.33, 1, 0.68, 1);
+
+      /* distance from a section heading block to the content it introduces.
+         One value so headings cannot drift apart between pages. */
+      --head-gap: 24px;
       --radius: 10px;
       --radius-sm: 8px;
       --radius-lg: 14px;
@@ -263,26 +273,6 @@
       100% { transform: scale(1); }
     }
 
-    /* ============================================================
-       REDUCED MOTION
-       Every entrance becomes a plain opacity fade; no hover
-       transforms, no pops, no rotations, anywhere.
-       ============================================================ */
-    @media (prefers-reduced-motion: reduce) {
-      .head-anim, .reveal, .tile {
-        transform: none !important;
-        opacity: 1 !important;
-        transition: opacity 0.2s linear !important;
-        animation: none !important;
-      }
-      .grid18 .tile:hover,
-      .tile:hover .tile-caption .name,
-      .tile:hover .tile-caption .tag { transform: none !important; }
-      .copy-icon.copied { animation: none !important; }
-      .contact-pop.open { transform: none !important; }
-      * { scroll-behavior: auto !important; }
-    }
-
     /* title and media arrive together on load, media a beat later */
     .js .crumbs, .js .crumbs-date {
       transform: translateY(10px);
@@ -300,14 +290,7 @@
     }
     body.loaded .viewer-frame { transform: translateY(0); opacity: 1; }
 
-    @media (prefers-reduced-motion: reduce) {
-      .crumbs, .crumbs-date, .viewer-frame {
-        transform: none !important;
-        opacity: 1 !important;
-        transition: opacity 0.2s linear !important;
-        transition-delay: 0s !important;
-      }
-    }
+    
   </style>
 </head>
 <body>
