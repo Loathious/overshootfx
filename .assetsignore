@@ -12,3 +12,7 @@ vercel.json
 wrangler.jsonc
 Deadsimplesites inspiration gallery/
 OLD WEBSITE/
+
+# Notes and working documents. assets.directory is ".", so anything left in
+# the project root is served publicly unless it is listed here.
+*.md
