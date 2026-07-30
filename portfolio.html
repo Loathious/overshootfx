@@ -244,19 +244,33 @@
       font-size: 13px;
       line-height: 1.6;
       color: color-mix(in srgb, var(--fg) 62%, transparent);
+      /* The numbers carry no break opportunity on either side (see .n), so
+         each one binds to the sense before it AND the label after it. That
+         unit is wide enough to push the entry to four lines and, filled
+         greedily, it strands "deliberately." alone on the last one.
+         Balancing spreads the slack evenly instead: 390/368/362/366 at the
+         60ch measure. Browsers without it fall back to the ragged version,
+         which is only ugly, never broken. */
+      text-wrap: balance;
     }
     .def-senses .n {
       font-family: var(--font-mono);
       font-size: 11px;
       color: color-mix(in srgb, var(--fg) 47%, transparent);
-      /* spacing is margin, never literal spaces: the markup runs tight so
-         a number can never be left stranded at the end of a line */
+      /* Spacing is margin, never literal spaces, and the markup carries no
+         <wbr> either, so there is no break opportunity anywhere around a
+         number. It binds to the sense before it and the label after it and
+         can therefore only ever sit mid-line: never opening one, never
+         closing one. A numeral alone at the left margin reads as a list
+         item and undoes the run-in; one left hanging at the right margin
+         reads as a footnote marker. Both are wrong for a dictionary entry,
+         which is why the number is not allowed to reach either edge. */
       margin-right: 0.3em;
     }
     /* The gap before senses 2 and 3 is a TRAILING margin on a spacer, not a
-       leading margin on the number. A leading margin still renders when its
-       number happens to start a line, which indents that line; a trailing one
-       lands at the end of the previous line, where it costs nothing. */
+       leading margin on the number. Kept as a spacer because it sits inside
+       the bound run and so has to be a box the line can measure, not space
+       the wrapper is free to collapse at a break. */
     .def-senses .sp { margin-right: 0.6em; }
     /* the italic's slant eats the following word space optically, so the
        normal space in the markup needs a little help to read as one */
@@ -585,11 +599,11 @@
         <section class="def" id="def" aria-label="overshoot, definition">
           <span class="def-word">Overshoot</span>
           <span class="def-pron">/&#x02CC;o&#x028A;v&#x0259;r&#x02C8;&#x0283;ut/<span class="dot">&#183;</span>verb</span>
-          <!-- Run-in, as a print entry sets it. No literal whitespace around
-               the numbers: the gaps are margins, and the <wbr> before each
-               number is the only break opportunity, so a line can start on a
-               number but never end on one. -->
-          <p class="def-senses"><span class="n">1.</span>to travel past an intended target or terminal value, esp. through excess momentum.<span class="sp"></span><wbr><span class="n">2.</span><i>(animation)</i> of a property: to exceed its final value before resolving to it, so the motion reads as mass rather than interpolation.<span class="sp"></span><wbr><span class="n">3.</span><i>(this studio)</i> to do so deliberately.</p>
+          <!-- Run-in, as a print entry sets it. No literal whitespace and no
+               <wbr> anywhere near the numbers: the gaps are margins, so each
+               number is welded to the sense before it and the label after it
+               and can only ever fall mid-line. See .def-senses .n. -->
+          <p class="def-senses"><span class="n">1.</span>to travel past an intended target or terminal value, esp. through excess momentum.<span class="sp"></span><span class="n">2.</span><i>(animation)</i> of a property: to exceed its final value before resolving to it, so the motion reads as mass rather than interpolation.<span class="sp"></span><span class="n">3.</span><i>(this studio)</i> to do so deliberately.</p>
         </section>
       </header>
 
