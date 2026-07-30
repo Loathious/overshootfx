@@ -240,31 +240,58 @@
        eye reaches the bio first. */
     .def-senses {
       margin-top: 5px;
-      max-width: 60ch;
+      /* 64ch, not the 60ch used elsewhere. The bound run around sense 2
+         (see .n) cannot be split, so it drops whole to the next line and
+         leaves a hole behind it. At 60ch that hole cost a fourth line and
+         the block collapsed to ~390px lines: correctly broken, but far too
+         thin for its column. 62ch is the first measure that takes the run
+         in three lines (435/533/522, "excess" pulled up to line 1) but it
+         clears the longest line by about a pixel, which no two text engines
+         will agree on. 64ch sets the same three lines with ~19px to spare.
+         The extra width is headroom and does not show: the block still
+         measures 533px at its widest. */
+      max-width: 64ch;
       font-size: 13px;
       line-height: 1.6;
       color: color-mix(in srgb, var(--fg) 62%, transparent);
-      /* The numbers carry no break opportunity on either side (see .n), so
-         each one binds to the sense before it AND the label after it. That
-         unit is wide enough to push the entry to four lines and, filled
-         greedily, it strands "deliberately." alone on the last one.
-         Balancing spreads the slack evenly instead: 390/368/362/366 at the
-         60ch measure. Browsers without it fall back to the ragged version,
-         which is only ugly, never broken. */
+      /* The two ends of the range want opposite wrapping, because the
+         welded run is a different proportion of the line in each.
+
+         Narrow (~304px column): the run is nearly half a line. Filling
+         greedily leaves it stranded, opening a 156px gap mid-paragraph
+         next to a 292px line. Balancing spreads that across every line
+         and the hole disappears.
+
+         Wide: the run is about a quarter of the line and greedy filling
+         is already tidy, but balancing now works against us. It is free
+         to compress a four-line block to ~390px inside a 532px column,
+         which reads as a thin ribbon rather than a paragraph. Pretty
+         fills the lines and only steps in to stop the last one from
+         coming down to a single word.
+
+         From 800px up all three modes agree, so this only decides the
+         narrow column and the 768-799 band. */
       text-wrap: balance;
     }
+    @media (min-width: 768px) { .def-senses { text-wrap: pretty; } }
     .def-senses .n {
       font-family: var(--font-mono);
       font-size: 11px;
       color: color-mix(in srgb, var(--fg) 47%, transparent);
-      /* Spacing is margin, never literal spaces, and the markup carries no
-         <wbr> either, so there is no break opportunity anywhere around a
-         number. It binds to the sense before it and the label after it and
-         can therefore only ever sit mid-line: never opening one, never
-         closing one. A numeral alone at the left margin reads as a list
-         item and undoes the run-in; one left hanging at the right margin
-         reads as a footnote marker. Both are wrong for a dictionary entry,
-         which is why the number is not allowed to reach either edge. */
+      /* A number must never touch either edge of the column. Alone at the
+         left margin it reads as a list item and undoes the run-in; hanging
+         at the right margin it reads as a footnote marker. So it has to be
+         welded to the sense before it AND to the label after it.
+
+         Removing whitespace and <wbr> only handles the left side. On the
+         right, Unicode line breaking permits a break before an opening
+         bracket, so "2." and "(animation)" still came apart and the number
+         landed at the right margin. The word joiner (&#8288;, U+2060) in
+         the markup suppresses that opportunity. Both sides are now closed
+         and the number can only ever fall mid-line.
+
+         Spacing stays margin rather than literal spaces, since a real
+         space would reopen the break the joiner just closed. */
       margin-right: 0.3em;
     }
     /* The gap before senses 2 and 3 is a TRAILING margin on a spacer, not a
@@ -599,11 +626,16 @@
         <section class="def" id="def" aria-label="overshoot, definition">
           <span class="def-word">Overshoot</span>
           <span class="def-pron">/&#x02CC;o&#x028A;v&#x0259;r&#x02C8;&#x0283;ut/<span class="dot">&#183;</span>verb</span>
-          <!-- Run-in, as a print entry sets it. No literal whitespace and no
-               <wbr> anywhere near the numbers: the gaps are margins, so each
-               number is welded to the sense before it and the label after it
-               and can only ever fall mid-line. See .def-senses .n. -->
-          <p class="def-senses"><span class="n">1.</span>to travel past an intended target or terminal value, esp. through excess momentum.<span class="sp"></span><span class="n">2.</span><i>(animation)</i> of a property: to exceed its final value before resolving to it, so the motion reads as mass rather than interpolation.<span class="sp"></span><span class="n">3.</span><i>(this studio)</i> to do so deliberately.</p>
+          <!-- Run-in, as a print entry sets it. The gaps around the numbers
+               are margins, never literal whitespace, and each number is
+               followed by a word joiner (&#8288;) so it cannot part from its
+               label. Between them that leaves no break opportunity on either
+               side of a number, which can therefore only fall mid-line.
+               The &nbsp; in the last sense is a widow guard: it keeps
+               "deliberately." from ending up alone on a line of its own in
+               the narrowest columns, where no wrapping mode saves it.
+               See .def-senses .n before touching any of it. -->
+          <p class="def-senses"><span class="n">1.</span>to travel past an intended target or terminal value, esp. through excess momentum.<span class="sp"></span><span class="n">2.</span>&#8288;<i>(animation)</i> of a property: to exceed its final value before resolving to it, so the motion reads as mass rather than interpolation.<span class="sp"></span><span class="n">3.</span>&#8288;<i>(this studio)</i> to do so&nbsp;deliberately.</p>
         </section>
       </header>
 
