@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alfred Gustafsson │ Overshoot</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b0b0b'/><path d='M20 64 C 38 64, 40 30, 56 30 C 70 30, 70 48, 82 48' stroke='%23dedede' stroke-width='8' fill='none' stroke-linecap='round'/></svg>">
+  <link rel="canonical" href="https://overshootfx.com/portfolio" />
+  <meta name="description" content="I make motion for software: demo films, launch videos, and product animation that moves the way a good interface feels to use. Alfred Gustafsson, working as Overshoot." />
+  <meta property="og:title" content="Alfred Gustafsson · Overshoot" />
+  <meta property="og:description" content="I make motion for software: demo films, launch videos, and product animation that moves the way a good interface feels to use." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://overshootfx.com/portfolio" />
+  <meta property="og:image" content="https://overshootfx.com/media/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://overshootfx.com/media/og.png" />
+  <meta name="twitter:creator" content="@overshootvfx" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <link rel="preload" as="font" type="font/woff2" href="media/fonts/geist-latin.woff2" crossorigin />
+  <!-- Entrances start from opacity 0, so they are gated on JS being alive.
+       Without this the header would stay blank if the script never runs. -->
+  <script>document.documentElement.classList.add('js');</script>
+  <style>
+    /* ============================================================
+       ALFRED GUSTAFSSON · Overshoot
+       Grid system, palette and spacing scale measured from
+       gaievskyi.com's computed CSS: dark surface, fluid gutter
+       grid, hairline rules, corner cross-marks.
+       ============================================================ */
+
+    /* Geist / Geist Mono, self-hosted, no third-party requests. Variable
+       weight axis, so one file per family per subset covers 400 through 600.
+       latin-ext is carried because the IPA in the definition's pronunciation
+       line lives there; without it those glyphs fall back mid-line. */
+    @font-face {
+      font-family: 'Geist';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('media/fonts/geist-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Geist';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('media/fonts/geist-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'Geist Mono';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('media/fonts/geist-mono-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Geist Mono';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('media/fonts/geist-mono-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* dark (default) values measured from the reference's .dark{} tokens */
+      --bg:        #0b0b0b;
+      --fg:        #dedede;
+      --muted:     #a1a1a1;
+      --faint:     #6b6b6b;
+      --border:    rgba(255,255,255,0.08);
+      --secondary:    #262626;
+      --secondary-fg: #fafafa;
+      --input:     rgba(255,255,255,0.15);
+      /* the site is monochrome by design; the "accent" is simply the
+         foreground, used so focus rings read clearly without new colour */
+      --accent:    #dedede;
+
+      --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+      /* ── Motion tokens. Every animation on the site uses one of these two. ──
+         --ease-overshoot passes its target once (peak ~25% past) and settles.
+         It is for TRANSFORMS ONLY: translate, scale, rotate.
+         --ease-out-plain is for every exit, reverse, opacity, colour and size.
+
+         Motion plays regardless of prefers-reduced-motion. On Windows that
+         flag is tied to the "show animations" performance toggle, which is
+         off for a large number of people who have no motion sensitivity, and
+         the overshoot is the point of the site. Amplitudes are small and
+         nothing loops, scroll-jacks or parallaxes. */
+      --ease-overshoot: cubic-bezier(0.34, 2.0, 0.64, 1);
+      --ease-out-plain: cubic-bezier(0.33, 1, 0.68, 1);
+
+      --radius: 10px;
+      --radius-sm: 8px;
+      --radius-lg: 14px;
+
+      /* distance from a section heading block to the content it introduces.
+         One value so "Work" and "Start a project" cannot drift apart. */
+      --head-gap: 24px;
+
+      --sp: 4px; /* base spacing unit, matches reference's --spacing: .25rem */
+      --content-max: 720px;
+      --outer-pad: 12px;
+      /* verified against the live reference at 950px and 700px viewports */
+      --fluid-col: clamp(0px, calc(20px + (80 * ((100vw - 450px) / (1024 - 450)))), 100px);
+    }
+
+    html { -webkit-text-size-adjust: 100%; scrollbar-color: var(--faint) transparent; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.25s var(--ease-out-plain), color 0.25s var(--ease-out-plain);
+      text-rendering: optimizeLegibility;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    /* reference renders these as plain foreground text, not the link-blue */
+    a.link { color: var(--fg); transition: color 0.2s var(--ease-out-plain); }
+    a.link:hover { text-decoration: underline; }
+    a.link.ext { display: inline-flex; align-items: center; gap: 2px; }
+    a.link.ext svg { position: relative; top: -1px; }
+    ::selection { background: rgba(255,255,255,0.16); color: #fff; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+    /* ============================================================
+       GRID SHELL: two rule lines, matching the reference exactly,
+       an outer DASHED line (fluid gutter edge) and an inner SOLID
+       line (content column edge, carries the corner cross-marks)
+       ============================================================ */
+    /* The full-bleed hairlines are sized in vw, which counts the scrollbar
+       gutter, so they spill a few px past the content box and the page scrolls
+       sideways. Clipping here rather than on html/body matters: overflow on
+       the root or body propagates to the viewport and clips nothing. clip
+       (not hidden) keeps this from becoming a scroll container. */
+    .outer {
+      padding: 0 var(--outer-pad);
+      overflow-x: clip;
+    }
+    .shell {
+      /* fixed cap (not tied to the current --fluid-col value) so the outer
+         line's centering margin behaves like the reference at all widths */
+      max-width: calc(var(--content-max) + 160px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: var(--fluid-col) 1fr var(--fluid-col);
+      min-height: 100vh;
+      border-left: 1px dashed var(--border);
+      border-right: 1px dashed var(--border);
+    }
+    .col {
+      grid-column: 2;
+      position: relative;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+
+    /* full-viewport-width hairline rule, centered under a narrower column */
+    .rule { position: relative; }
+    .rule::before {
+      content: '';
+      position: absolute; top: 0; left: 50%;
+      width: 100vw; height: 1px;
+      transform: translateX(-50%);
+      background: var(--border);
+    }
+    .rule.dashed::before { background: none; border-top: 1px dashed var(--border); }
+
+    /* small "+" cross-marks at rule intersections */
+    .corner { position: absolute; width: 12px; height: 12px; pointer-events: none; color: var(--faint); }
+    .corner::before, .corner::after { content: ''; position: absolute; background: currentColor; }
+    .corner::before { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
+    .corner::after  { left: 50%; top: 0; height: 100%; width: 1px; transform: translateX(-50%); }
+    .corner.tl { top: -6px; left: -6px; }
+    .corner.tr { top: -6px; right: -6px; }
+    .corner.bl { bottom: -6px; left: -6px; }
+    .corner.br { bottom: -6px; right: -6px; }
+
+    /* ============================================================
+       HEADER
+       ============================================================ */
+    header.band {
+      margin-top: 48px;
+      /* bottom is trimmed against #bio's 56px top padding so the run from the
+         last sense to the first bio line lands around 70px: enough air that
+         the definition reads as part of the header, not the body */
+      padding: 12px 12px 16px;
+    }
+    @media (min-width: 768px) { header.band { padding: 24px 32px 16px; } }
+
+    .id-row { display: block; }
+    .id-name { display: block; font-size: 18px; font-weight: 600; line-height: 1.3; color: var(--fg); }
+    @media (min-width: 768px) { .id-name { font-size: 21px; } }
+
+    /* ============================================================
+       DEFINITION
+       Marginalia, not a component. The page states structure with
+       rules, crop marks and underlines and never draws a box around
+       anything, so this is set purely as quiet type in the same
+       column as everything else.
+       ============================================================ */
+    .def { margin-top: 28px; }
+
+    /* the studio name, which doubles as the dictionary headword */
+    .def-word {
+      display: block;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.25;
+      letter-spacing: -0.005em;
+      color: color-mix(in srgb, var(--fg) 90%, transparent);
+    }
+    @media (min-width: 768px) { .def-word { font-size: 16px; } }
+
+    .def-pron {
+      display: block;
+      margin-top: 7px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      color: color-mix(in srgb, var(--fg) 50%, transparent);
+    }
+    .def-pron .dot { margin: 0 0.4em; }
+
+    /* Senses run in as one block, the way a print entry sets them, rather
+       than stacking as a list. Narrower and dimmer than the bio, so the
+       eye reaches the bio first. */
+    .def-senses {
+      margin-top: 10px;
+      max-width: 60ch;
+      font-size: 13px;
+      line-height: 1.6;
+      color: color-mix(in srgb, var(--fg) 62%, transparent);
+    }
+    .def-senses .n {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: color-mix(in srgb, var(--fg) 47%, transparent);
+      /* spacing is margin, never literal spaces: the markup runs tight so
+         a number can never be left stranded at the end of a line */
+      margin-right: 0.3em;
+    }
+    /* The gap before senses 2 and 3 is a TRAILING margin on a spacer, not a
+       leading margin on the number. A leading margin still renders when its
+       number happens to start a line, which indents that line; a trailing one
+       lands at the end of the previous line, where it costs nothing. */
+    .def-senses .sp { margin-right: 0.6em; }
+    /* the italic's slant eats the following word space optically, so the
+       normal space in the markup needs a little help to read as one */
+    .def-senses i { font-style: italic; margin-right: 0.12em; }
+    /* one plain fade for the whole block, after the headword lands */
+    .js .def-senses { opacity: 0; transition: opacity 0.3s var(--ease-out-plain); }
+    body.loaded .def-senses { opacity: 1; transition-delay: 0.48s; }
+
+    /* ============================================================
+       BIO
+       ============================================================ */
+    .band { position: relative; }
+    #bio { padding: 56px 12px; }
+    @media (min-width: 768px) { #bio { padding: 56px 32px; } }
+    #bio p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+    @media (min-width: 768px) { #bio p { font-size: 16px; line-height: 26px; } }
+    #bio p + p { margin-top: 16px; }
+    #bio strong { color: var(--fg); font-weight: 600; }
+    .copy-icon {
+      position: relative;
+      display: inline-flex; align-items: center; justify-content: center;
+      vertical-align: -1px;
+      width: 18px; height: 18px;
+      background: none; border: none; padding: 0; margin: 0;
+      color: var(--fg); cursor: pointer;
+      transition: opacity 0.2s var(--ease-out-plain);
+      opacity: 0.7;
+    }
+    .copy-icon:hover { opacity: 1; }
+    .copy-icon svg { position: absolute; inset: 0; margin: auto; }
+    .copy-icon .ico-check { opacity: 0; }
+    .copy-icon.copied .ico-copy { opacity: 0; }
+    .copy-icon.copied .ico-check { opacity: 1; }
+    /* the pop leaves rest, passes out to 1.15, and settles back once */
+    .copy-icon.copied { animation: copy-pop 0.34s both; }
+    @keyframes copy-pop {
+      0%   { transform: scale(1);    animation-timing-function: var(--ease-overshoot); }
+      38%  { transform: scale(1.15); animation-timing-function: var(--ease-out-plain); }
+      100% { transform: scale(1); }
+    }
+
+    /* ============================================================
+       WORK GRID
+       ============================================================ */
+    #work { padding: 56px 12px; }
+    @media (min-width: 768px) { #work { padding: 56px 32px; } }
+    .work-head { display: flex; align-items: baseline; margin-bottom: var(--head-gap); }
+    .work-head h2 { font-size: 16px; font-weight: 400; color: var(--fg); }
+    .work-head sup { font-size: 0.6em; color: var(--muted); margin-left: 1px; }
+    .work-head .view-all {
+      margin-left: auto;
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 13px; color: var(--muted);
+      transition: color 0.2s var(--ease-out-plain);
+    }
+    .work-head .view-all:hover { color: var(--fg); }
+    .work-head .view-all svg { transition: transform 0.18s var(--ease-out-plain); }
+    .work-head .view-all:hover svg,
+    .work-head .view-all:focus-visible svg {
+      transform: translateX(3px);
+      transition: transform 0.2s var(--ease-overshoot);
+    }
+
+    .grid18 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 480px) { .grid18 { grid-template-columns: 1fr; } }
+
+    /* video spotlight: hovering a tile dims the whole page, not just its
+       siblings, and lifts the hovered tile above the scrim. The scrim is a
+       fixed child of the grid: fixed items are pulled out of grid layout
+       entirely (no empty cell, no reflow), and cover the full viewport
+       regardless of where they sit in the DOM. */
+    .spotlight {
+      position: fixed; inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 40;
+      transition: opacity 0.35s var(--ease-out-plain);
+    }
+    .grid18.hovering .spotlight { opacity: 0.4; }
+
+    .grid18 .tile {
+      opacity: 1;
+      /* exit: plain, and slightly faster than the entrance */
+      transition: opacity 0.35s var(--ease-out-plain), filter 0.35s var(--ease-out-plain),
+                  border-color 0.2s var(--ease-out-plain), transform 0.18s var(--ease-out-plain);
+    }
+    /* overshoot in, plain out */
+    .grid18 .tile:hover {
+      transform: scale(1.02);
+      /* above the page scrim, so the hovered video stays at full brightness */
+      z-index: 50;
+      transition: transform 0.22s var(--ease-overshoot), opacity 0.35s var(--ease-out-plain),
+                  filter 0.35s var(--ease-out-plain), border-color 0.2s var(--ease-out-plain);
+    }
+    /* label row rides the same curve; the flex items move, not the
+       gradient plate, so no gap opens at the bottom edge of the tile */
+    .tile-caption .name, .tile-caption .tag {
+      transition: transform 0.18s var(--ease-out-plain);
+    }
+    .tile:hover .tile-caption .name, .tile:hover .tile-caption .tag {
+      transform: translateY(-2px);
+      transition: transform 0.22s var(--ease-overshoot);
+    }
+
+    .tile {
+      position: relative;
+      display: block;
+      width: 100%;
+      padding: 0;
+      font: inherit;
+      color: inherit;
+      text-align: left;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .tile:hover { border-color: var(--faint); }
+    .tile video, .tile img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .tile-caption {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: linear-gradient(0deg, rgba(0,0,0,0.55), transparent);
+      font-size: 11px;
+    }
+    .tile-caption .name { color: #fff; font-weight: 500; }
+    .tile-caption .tag { color: rgba(255,255,255,0.6); }
+
+    /* ============================================================
+       CONTACT FORM
+       ============================================================ */
+    #contact { padding: 56px 12px; }
+    @media (min-width: 768px) { #contact { padding: 56px 32px; } }
+    #contact h2 { font-size: 16px; font-weight: 400; margin-bottom: 6px; }
+    /* the lede belongs to the heading block, so the gap to the form below
+       matches the gap under "Work" exactly */
+    #contact .lede { font-size: 14px; color: var(--muted); max-width: 56ch; margin-bottom: var(--head-gap); }
+    .form { display: flex; flex-direction: column; max-width: 640px; }
+    .field {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      align-items: baseline;
+      gap: 6px 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      /* underlines never overshoot; a rubber-banding input reads as broken */
+      transition: border-color 0.2s var(--ease-out-plain);
+    }
+    .field:focus-within { border-bottom-color: var(--accent); }
+    @media (max-width: 560px) { .field { grid-template-columns: 1fr; gap: 6px; } }
+    .field label, .field .lbl {
+      font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--faint);
+      padding-top: 2px;
+    }
+    .input, .textarea {
+      width: 100%;
+      padding: 2px 0;
+      background: transparent;
+      border: none;
+      font-family: inherit; font-size: 14px;
+      color: var(--fg);
+      outline: none;
+      -webkit-appearance: none; appearance: none;
+    }
+    .input::placeholder, .textarea::placeholder { color: var(--faint); }
+    .textarea { resize: vertical; min-height: 72px; line-height: 1.6; padding-top: 4px; }
+
+    .form-foot { display: flex; align-items: center; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
+    .btn-send {
+      font-family: inherit; font-size: 13px; font-weight: 500;
+      padding: 9px 16px; border-radius: var(--radius-sm);
+      background: var(--secondary); color: var(--secondary-fg);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      /* release returns to rest on the overshoot curve */
+      transition: background 0.2s var(--ease-out-plain), border-color 0.2s var(--ease-out-plain),
+                  transform 0.22s var(--ease-overshoot);
+    }
+    .btn-send:hover { border-color: var(--faint); }
+    /* press is plain and fast */
+    .btn-send:active { transform: scale(0.98); transition: transform 0.1s var(--ease-out-plain); }
+    .btn-send:disabled { opacity: 0.5; cursor: default; transform: none; }
+    .form-status { font-size: 12px; color: var(--muted); opacity: 0; transition: opacity 0.2s var(--ease-out-plain); }
+    .form-status.show { opacity: 1; }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    footer.band { padding: 24px 12px 96px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    @media (min-width: 768px) { footer.band { padding: 24px 32px 96px; } }
+    footer.band .copy { font-size: 12px; color: var(--faint); }
+    footer.band .contact-link { font-size: 12px; color: var(--muted); cursor: pointer; transition: color 0.2s var(--ease-out-plain); background: none; border: none; }
+    footer.band .contact-link:hover { color: var(--fg); }
+
+    .contact-wrap { position: relative; }
+    .contact-pop {
+      position: absolute; bottom: calc(100% + 10px); right: 0;
+      min-width: 220px;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      transform-origin: bottom right;
+      opacity: 0; transform: scale(0.97);
+      pointer-events: none;
+      transition: opacity 0.2s var(--ease-out-plain), transform 0.18s var(--ease-out-plain);
+    }
+    .contact-pop.open {
+      opacity: 1; pointer-events: auto;
+      transform: scale(1);
+      transition: opacity 0.2s var(--ease-out-plain), transform 0.28s var(--ease-overshoot);
+    }
+    .contact-pop-label {
+      display: block;
+      font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 6px;
+    }
+    .contact-pop-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .contact-pop-row span { font-size: 13px; color: var(--secondary-fg); }
+
+    /* ============================================================
+       REVEAL
+       Sections fade only. Body copy never translates and never
+       carries the overshoot curve; headings do the moving.
+       ============================================================ */
+    .js .reveal { opacity: 0; transition: opacity 0.6s var(--ease-out-plain); }
+    .reveal.in { opacity: 1; }
+
+    /* section headings arrive on the overshoot curve, once */
+    .head-anim { display: inline-block; }
+    .js .head-anim {
+      transform: translateY(10px);
+      transition: transform 0.42s var(--ease-overshoot);
+    }
+    .reveal.in .head-anim { transform: translateY(0); }
+
+    /* name and headword: same arrival, on load rather than on scroll.
+       These two are the only things in this block that move. */
+    .js .id-row .id-name, .js .def-word {
+      transform: translateY(10px);
+      opacity: 0;
+      transition: transform 0.42s var(--ease-overshoot), opacity 0.42s var(--ease-out-plain);
+    }
+    .js .def-word { transition-delay: 0.06s; }
+    body.loaded .id-row .id-name,
+    body.loaded .def-word { transform: translateY(0); opacity: 1; }
+
+    /* ============================================================
+       LIGHTBOX
+       ============================================================ */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s var(--ease-out-plain);
+    }
+    .lightbox.open { opacity: 1; pointer-events: auto; }
+    /* backdrop is a plain opacity fade, never a transform */
+    .lb-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.8); }
+    .lb-content {
+      position: relative; z-index: 10; width: 100%; max-width: min(86vw, 900px);
+      transform: scale(0.97);
+      transition: transform 0.22s var(--ease-out-plain);
+    }
+    .lightbox.open .lb-content {
+      transform: scale(1);
+      transition: transform 0.36s var(--ease-overshoot);
+    }
+    .lb-close {
+      position: absolute; top: -32px; right: 0;
+      background: none; border: none; color: var(--muted); font-size: 22px; line-height: 1; cursor: pointer;
+      transition: color 0.2s var(--ease-out-plain), transform 0.18s var(--ease-out-plain);
+    }
+    .lb-close:hover, .lb-close:focus-visible { color: var(--fg); }
+    .lb-close:hover, .lb-close:focus-visible {
+      transform: rotate(90deg);
+      transition: color 0.2s var(--ease-out-plain), transform 0.24s var(--ease-overshoot);
+    }
+    .lb-frame { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: #000; }
+    .lb-frame video { display: block; width: 100%; max-height: 80vh; object-fit: contain; background: #000; }
+    .lb-meta { display: flex; justify-content: space-between; margin-top: 12px; font-size: 11px; color: var(--muted); }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(8px);
+      background: var(--secondary); color: var(--secondary-fg); font-size: 12px; font-weight: 500;
+      padding: 8px 14px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      opacity: 0; pointer-events: none; white-space: nowrap; z-index: 300;
+      transition: opacity 0.25s var(--ease-out-plain), transform 0.25s var(--ease-out-plain);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <div class="outer">
+   <div class="shell">
+    <div class="col">
+
+      <!-- ════════ HEADER ════════ -->
+      <header class="band rule dashed">
+        <div class="id-row">
+          <span class="id-name">Alfred Gustafsson</span>
+        </div>
+        <!-- The definition. Home page only; it does not repeat anywhere else.
+             The headword performs the principle it defines as it arrives. -->
+        <section class="def" id="def" aria-label="overshoot, definition">
+          <span class="def-word">Overshoot</span>
+          <span class="def-pron">/&#x02CC;o&#x028A;v&#x0259;r&#x02C8;&#x0283;u&#x02D0;t/<span class="dot">&#183;</span>verb</span>
+          <!-- Run-in, as a print entry sets it. No literal whitespace around
+               the numbers: the gaps are margins, and the <wbr> before each
+               number is the only break opportunity, so a line can start on a
+               number but never end on one. -->
+          <p class="def-senses"><span class="n">1.</span>to go beyond an intended target or limit, especially unintentionally.<span class="sp"></span><wbr><span class="n">2.</span><i>(animation)</i> of a value: to pass its target and settle back, imitating the momentum of a physical object.<span class="sp"></span><wbr><span class="n">3.</span><i>(this studio)</i> standard practice.</p>
+        </section>
+      </header>
+
+      <!-- ════════ BIO ════════ -->
+      <section id="bio" class="band rule reveal">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <p>I make motion for software: demo films, launch videos, and product animation that moves the way a good interface feels to use. Most products do something clever in their first few seconds. Getting that across before someone clicks away is the part I handle.</p>
+        <p>I work as Overshoot, mostly with founders and small product teams. Everything is animated by hand in After Effects, often on real interfaces rebuilt layer by layer. If your product is better than its demo, write me: <a class="link" href="mailto:contact@overshootfx.com">contact@overshootfx.com</a> <button type="button" class="copy-icon" id="copy-inline" aria-label="Copy email address"><svg class="ico-copy" width="13" height="13" viewBox="0 0 20 20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/><rect width="10" height="10" x="3" y="3" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" rx="2" ry="2"/></svg><svg class="ico-check" width="13" height="13" viewBox="0 0 20 20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="m4 10.5 4 4 8-9"/></svg></button></p>
+        <p>Based in Stockholm. Async, in writing, replies within a day. Find me on <a class="link ext" href="https://x.com/overshootvfx" target="_blank" rel="noopener noreferrer">X<svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a> and <a class="link ext" href="https://tiktok.com/@overshootvfx" target="_blank" rel="noopener noreferrer">TikTok<svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>.</p>
+      </section>
+
+      <!-- ════════ WORK ════════ -->
+      <section id="work" class="band rule reveal">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <div class="work-head">
+          <h2><span class="head-anim">Work<sup id="work-count" aria-hidden="true"></sup></span></h2>
+          <a class="view-all" href="work.html">View all
+            <svg width="12" height="12" viewBox="0 0 18 18" fill="currentColor"><path d="M10 2.75c0 .414.336.75.75.75h2.5c.69 0 1.25.56 1.25 1.25v8.5c0 .69-.56 1.25-1.25 1.25h-8.5c-.69 0-1.25-.56-1.25-1.25v-2.5a.75.75 0 0 0-1.5 0v2.5A2.753 2.753 0 0 0 4.75 16h8.5A2.753 2.753 0 0 0 16 13.25v-8.5A2.753 2.753 0 0 0 13.25 2h-2.5a.75.75 0 0 0-.75.75"/><path d="M6.25 2h-1.5A2.75 2.75 0 0 0 2 4.75v1.5A2.75 2.75 0 0 0 4.75 9h1.5A2.75 2.75 0 0 0 9 6.25v-1.5A2.75 2.75 0 0 0 6.25 2M4.75 3.5h1.5c.69 0 1.25.56 1.25 1.25v1.5c0 .69-.56 1.25-1.25 1.25h-1.5c-.69 0-1.25-.56-1.25-1.25v-1.5c0-.69.56-1.25 1.25-1.25"/></svg>
+          </a>
+        </div>
+
+        <div class="grid18" id="work-grid">
+          <!-- The two tiles above the fold carry their src up front; the rest
+               attach theirs on approach. Every tile shows its poster either way. -->
+          <button type="button" class="tile" data-src="media/claude.mp4" data-title="Claude" data-tag="Ad concept · 2026" aria-label="Play Claude, ad concept">
+            <video src="media/claude.mp4" loop muted playsinline preload="metadata" poster="media/posters/claude.jpg"></video>
+            <div class="tile-caption"><span class="name">Claude</span><span class="tag">Ad concept</span></div>
+          </button>
+          <button type="button" class="tile" data-src="media/raycast.mp4" data-title="Raycast" data-tag="Ad concept · 2026" aria-label="Play Raycast, ad concept">
+            <video src="media/raycast.mp4" loop muted playsinline preload="metadata" poster="media/posters/raycast.jpg"></video>
+            <div class="tile-caption"><span class="name">Raycast</span><span class="tag">Ad concept</span></div>
+          </button>
+          <!-- Temporarily removed: Polished Snow tile (media/polished-snow.mp4 kept on disk)
+          <button type="button" class="tile" data-src="media/polished-snow.mp4" data-title="Polished Snow" data-tag="Logo animation · 2026" aria-label="Play Polished Snow, logo animation">
+            <video data-lazy-src="media/polished-snow.mp4" loop muted playsinline preload="none" poster="media/posters/polished-snow.jpg"></video>
+            <div class="tile-caption"><span class="name">Polished Snow</span><span class="tag">Logo animation</span></div>
+          </button>
+          -->
+          <button type="button" class="tile" data-src="media/bezi.mp4" data-title="Bezi" data-tag="Ad concept · 2026" aria-label="Play Bezi, ad concept">
+            <video data-lazy-src="media/bezi.mp4" loop muted playsinline preload="none" poster="media/posters/bezi.jpg"></video>
+            <div class="tile-caption"><span class="name">Bezi</span><span class="tag">Ad concept</span></div>
+          </button>
+          <div class="spotlight" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <!-- ════════ CONTACT ════════ -->
+      <section id="contact" class="band rule reveal">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <h2><span class="head-anim">Start a project</span></h2>
+        <p class="lede">A sentence or two about what you're building is plenty to start. I'll reply within a day.</p>
+
+        <form class="form" id="contact-form" novalidate>
+          <div class="field">
+            <label for="f-name">Name</label>
+            <input class="input" id="f-name" name="name" type="text" placeholder="Your name" required />
+          </div>
+          <div class="field">
+            <label for="f-email">Email</label>
+            <input class="input" id="f-email" name="email" type="email" placeholder="you@company.com" required />
+          </div>
+          <div class="field">
+            <label for="f-message">Message</label>
+            <textarea class="textarea" id="f-message" name="message" placeholder="What are you building? What exists already, what's missing, any references you like." required></textarea>
+          </div>
+          <div class="form-foot">
+            <button class="btn-send" type="submit" id="submit-btn">Send it over</button>
+            <span class="form-status" id="form-status"></span>
+          </div>
+        </form>
+      </section>
+
+      <!-- ════════ FOOTER ════════ -->
+      <footer class="band rule">
+        <span class="copy">© Alfred Gustafsson 2026</span>
+        <div class="contact-wrap">
+          <button type="button" class="contact-link" id="contact-btn" aria-expanded="false" aria-controls="contact-pop">Contact</button>
+          <div class="contact-pop" id="contact-pop">
+            <span class="contact-pop-label">Email</span>
+            <div class="contact-pop-row">
+              <span>contact@overshootfx.com</span>
+              <button type="button" class="copy-icon" id="copy-btn" aria-label="Copy email">
+                <svg width="13" height="13" viewBox="0 0 20 20"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/><rect width="10" height="10" x="3" y="3" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" rx="2" ry="2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+   </div>
+  </div>
+
+  <!-- ── Lightbox ── -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Video player">
+    <div class="lb-backdrop" id="lb-backdrop"></div>
+    <div class="lb-content">
+      <button class="lb-close" id="lb-close" aria-label="Close">×</button>
+      <div class="lb-frame"><video id="lb-video" controls playsinline></video></div>
+      <div class="lb-meta"><span id="lb-title"></span><span id="lb-tag"></span></div>
+    </div>
+  </div>
+
+  <script>
+    const EMAIL = 'contact@overshootfx.com';
+    const CAN_HOVER = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+    /* ── Name block entrance, on load, once ── */
+    requestAnimationFrame(() => document.body.classList.add('loaded'));
+
+    /* ── Copy to clipboard, with a check-mark swap and a polite announcement ── */
+    function showToast(msg){
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('show'), 2200);
+    }
+    async function copyEmail(btn){
+      try {
+        await navigator.clipboard.writeText(EMAIL);
+      } catch {
+        const el = Object.assign(document.createElement('textarea'), {value: EMAIL});
+        el.setAttribute('readonly', ''); el.style.position = 'fixed'; el.style.opacity = '0';
+        document.body.appendChild(el); el.select();
+        try { document.execCommand('copy'); } catch {}
+        el.remove();
+      }
+      if (btn){
+        btn.classList.remove('copied');
+        void btn.offsetWidth;           // restart the pop if clicked again mid-swap
+        btn.classList.add('copied');
+        clearTimeout(btn._t);
+        btn._t = setTimeout(()=>btn.classList.remove('copied'), 1500);
+      }
+      showToast('Copied: ' + EMAIL);
+    }
+    document.querySelectorAll('.copy-icon').forEach(btn => {
+      btn.addEventListener('click', e => { e.stopPropagation(); copyEmail(btn); });
+    });
+
+    /* ── Reveal on scroll: fires once per element, never re-triggers ── */
+    const revObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('in');
+        revObserver.unobserve(e.target);
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => revObserver.observe(el));
+
+    /* The definition sits at the top of the page with the name block, so it
+       arrives on load with it rather than waiting on a scroll trigger. */
+
+    /* ── Work grid ── */
+    const workGrid = document.getElementById('work-grid');
+    const tiles = Array.from(document.querySelectorAll('.tile'));
+
+    /* superscript is derived from the cards actually on the page, so it
+       cannot drift out of sync when work is added or removed */
+    const workCount = document.getElementById('work-count');
+    if (workCount) workCount.textContent = String(tiles.length);
+
+    /* below-the-fold videos attach their source on approach */
+    const lazyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const v = e.target;
+        if (v.dataset.lazySrc){
+          v.src = v.dataset.lazySrc;
+          v.preload = 'metadata';
+          delete v.dataset.lazySrc;
+        }
+        lazyObserver.unobserve(v);
+      });
+    }, { rootMargin: '200px 0px' });
+    document.querySelectorAll('.tile video[data-lazy-src]').forEach(v => lazyObserver.observe(v));
+
+    function playTile(v){ if (v && v.src) v.play().catch(()=>{}); }
+    function pauseTile(v){
+      if (!v) return;
+      v.pause();
+      /* rewind so the next hover always starts the clip fresh, rather
+         than resuming wherever the last hover happened to leave off */
+      try { if (v.currentTime !== 0) v.currentTime = 0; } catch {}
+    }
+
+    if (CAN_HOVER.matches){
+      /* desktop: play on hover, pause on leave */
+      tiles.forEach(tile => {
+        const v = tile.querySelector('video');
+        tile.addEventListener('mouseenter', () => { workGrid.classList.add('hovering'); playTile(v); });
+        tile.addEventListener('mouseleave', () => { workGrid.classList.remove('hovering'); pauseTile(v); });
+        tile.addEventListener('focus', () => playTile(v));
+        tile.addEventListener('blur', () => pauseTile(v));
+      });
+    } else {
+      /* touch: play while the tile is in view, pause when it leaves */
+      const playObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          const v = e.target.querySelector('video');
+          if (e.isIntersecting) playTile(v); else pauseTile(v);
+        });
+      }, { threshold: 0.5 });
+      tiles.forEach(tile => playObserver.observe(tile));
+    }
+
+    tiles.forEach(tile => {
+      tile.addEventListener('click', () => openLightbox(tile, tile.dataset.src, tile.dataset.title, tile.dataset.tag));
+    });
+
+    /* ── Dialog helper: focus trap, Escape, focus returns to the trigger ── */
+    const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, video[controls], [tabindex]:not([tabindex="-1"])';
+    function trapFocus(container, e){
+      const nodes = Array.from(container.querySelectorAll(FOCUSABLE)).filter(n => n.offsetParent !== null || n === document.activeElement);
+      if (!nodes.length) return;
+      const first = nodes[0], last = nodes[nodes.length - 1];
+      if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+    }
+
+    /* ── Lightbox ── */
+    const lb = document.getElementById('lightbox');
+    const lbVideo = document.getElementById('lb-video');
+    const lbTitle = document.getElementById('lb-title');
+    const lbTag = document.getElementById('lb-tag');
+    const lbClose = document.getElementById('lb-close');
+    const lbBackdrop = document.getElementById('lb-backdrop');
+    let lbTrigger = null;
+
+    function openLightbox(trigger, src, title, tag){
+      lbTrigger = trigger || null;
+      lbVideo.src = src; lbTitle.textContent = title || ''; lbTag.textContent = tag || '';
+      document.body.style.overflow = 'hidden';
+      lb.classList.add('open');
+      lbVideo.play().catch(()=>{});
+      lbClose.focus();
+    }
+    function closeLightbox(){
+      if (!lb.classList.contains('open')) return;
+      lb.classList.remove('open');
+      lbVideo.pause(); lbVideo.removeAttribute('src'); lbVideo.load();
+      document.body.style.overflow = '';
+      if (lbTrigger){ lbTrigger.focus(); lbTrigger = null; }
+    }
+    lbClose.addEventListener('click', closeLightbox);
+    lbBackdrop.addEventListener('click', closeLightbox);
+
+    /* ── Contact popover ── */
+    const contactBtn = document.getElementById('contact-btn');
+    const contactPop = document.getElementById('contact-pop');
+    function openPop(){
+      contactPop.classList.add('open');
+      contactBtn.setAttribute('aria-expanded', 'true');
+    }
+    function closePop(returnFocus){
+      if (!contactPop.classList.contains('open')) return;
+      contactPop.classList.remove('open');
+      contactBtn.setAttribute('aria-expanded', 'false');
+      if (returnFocus) contactBtn.focus();
+    }
+    contactBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      contactPop.classList.contains('open') ? closePop(false) : openPop();
+    });
+    document.addEventListener('click', e => {
+      if (contactPop.classList.contains('open') && !contactPop.contains(e.target) && e.target !== contactBtn) closePop(false);
+    });
+
+    /* ── One keyboard handler for both surfaces ── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape'){
+        if (lb.classList.contains('open')) { closeLightbox(); return; }
+        closePop(true);
+        return;
+      }
+      if (e.key === 'Tab'){
+        if (lb.classList.contains('open')) trapFocus(lb, e);
+        else if (contactPop.classList.contains('open')) trapFocus(contactPop, e);
+      }
+    });
+
+    /* ── Contact form: idle → sending → sent / error. No state dead-ends. ── */
+    document.getElementById('contact-form').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      const status = document.getElementById('form-status');
+      const fields = Array.from(this.querySelectorAll('input, textarea'));
+      const original = 'Send it over';
+
+      if (!this.checkValidity()){
+        status.textContent = 'Add your name, email and a message, then send.';
+        status.classList.add('show');
+        clearTimeout(status._t);
+        status._t = setTimeout(()=>status.classList.remove('show'), 4500);
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Sending';
+      fields.forEach(f => f.disabled = true);
+      status.classList.remove('show');
+
+      try {
+        const res = await fetch('https://formspree.io/f/xzdwdglv', {
+          method: 'POST', body: new FormData(this), headers: { Accept: 'application/json' }
+        });
+        if (!res.ok) throw new Error('server');
+        this.reset();
+        btn.textContent = 'Sent';
+        status.textContent = "Message sent. You'll hear back within a day.";
+        status.classList.add('show');
+        setTimeout(()=>{ btn.textContent = original; btn.disabled = false; fields.forEach(f => f.disabled = false); }, 2500);
+        clearTimeout(status._t);
+        status._t = setTimeout(()=>status.classList.remove('show'), 5000);
+      } catch {
+        btn.disabled = false; btn.textContent = original;
+        fields.forEach(f => f.disabled = false);
+        status.textContent = 'That did not send. Email contact@overshootfx.com directly.';
+        status.classList.add('show');
+        clearTimeout(status._t);
+        status._t = setTimeout(()=>status.classList.remove('show'), 6000);
+      }
+    });
+  </script>
+</body>
+</html>

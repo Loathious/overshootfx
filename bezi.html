@@ -3,13 +3,60 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bezi · Alfred Gustafsson</title>
+  <title>Bezi │ Overshoot</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b0b0b'/><path d='M20 64 C 38 64, 40 30, 56 30 C 70 30, 70 48, 82 48' stroke='%23dedede' stroke-width='8' fill='none' stroke-linecap='round'/></svg>">
-  <meta name="description" content="Bezi product demo, motion by Alfred Gustafsson / Overshoot." />
+  <link rel="canonical" href="https://overshootfx.com/bezi" />
+  <meta name="description" content="Bezi, ad concept. Motion for software by Alfred Gustafsson, working as Overshoot." />
   <meta property="og:title" content="Bezi · Alfred Gustafsson" />
+  <meta property="og:description" content="Bezi, ad concept. Motion for software by Alfred Gustafsson." />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://overshootfx.com/bezi" />
+  <meta property="og:image" content="https://overshootfx.com/media/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://overshootfx.com/media/og.png" />
+  <meta name="twitter:creator" content="@overshootvfx" />
   <meta name="theme-color" content="#0b0b0b" />
+  <link rel="preload" as="font" type="font/woff2" href="media/fonts/geist-latin.woff2" crossorigin />
+  <!-- Entrances start from opacity 0, so they are gated on JS being alive. -->
+  <script>document.documentElement.classList.add('js');</script>
   <style>
+    /* Geist / Geist Mono, self-hosted, no third-party requests. Variable
+       weight axis, so one file per family per subset covers 400 through 600. */
+    @font-face {
+      font-family: 'Geist';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('media/fonts/geist-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Geist';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('media/fonts/geist-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'Geist Mono';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('media/fonts/geist-mono-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: 'Geist Mono';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('media/fonts/geist-mono-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -21,7 +68,29 @@
       --secondary:    #262626;
       --secondary-fg: #fafafa;
 
-      --ease: cubic-bezier(0.19, 1, 0.22, 1);
+      /* the site is monochrome by design; the "accent" is simply the
+         foreground, used so focus rings read clearly without new colour */
+      --accent:    #dedede;
+
+      --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+      /* ── Motion tokens. Every animation on the site uses one of these two. ──
+         --ease-overshoot passes its target once (peak ~25% past) and settles.
+         It is for TRANSFORMS ONLY: translate, scale, rotate.
+         --ease-out-plain is for every exit, reverse, opacity, colour and size.
+
+         Motion plays regardless of prefers-reduced-motion. On Windows that
+         flag is tied to the "show animations" performance toggle, which is
+         off for a large number of people who have no motion sensitivity, and
+         the overshoot is the point of the site. Amplitudes are small and
+         nothing loops, scroll-jacks or parallaxes. */
+      --ease-overshoot: cubic-bezier(0.34, 2.0, 0.64, 1);
+      --ease-out-plain: cubic-bezier(0.33, 1, 0.68, 1);
+
+      /* distance from a section heading block to the content it introduces.
+         One value so headings cannot drift apart between pages. */
+      --head-gap: 24px;
       --radius: 10px;
       --radius-sm: 8px;
       --radius-lg: 14px;
@@ -36,7 +105,7 @@
     body {
       background: var(--bg);
       color: var(--fg);
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: var(--font-sans);
       font-size: 14px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
@@ -44,12 +113,17 @@
     }
 
     a { color: inherit; text-decoration: none; }
-    a.crumb { color: var(--muted); transition: color 0.2s var(--ease); }
+    a.crumb { color: var(--muted); transition: color 0.2s var(--ease-out-plain); }
     a.crumb:hover { color: var(--fg); }
     ::selection { background: rgba(255,255,255,0.16); color: #fff; }
-    :focus-visible { outline: 1px solid var(--muted); outline-offset: 2px; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
 
-    .outer { padding: 0 var(--outer-pad); }
+    /* The full-bleed hairlines are sized in vw, which counts the scrollbar
+       gutter, so they spill a few px past the content box and the page scrolls
+       sideways. Clipping here rather than on html/body matters: overflow on
+       the root or body propagates to the viewport and clips nothing. clip
+       (not hidden) keeps this from becoming a scroll container. */
+    .outer { padding: 0 var(--outer-pad); overflow-x: clip; }
     .shell {
       max-width: calc(var(--content-max) + 160px);
       margin: 0 auto;
@@ -96,8 +170,9 @@
     .crumbs .current { color: var(--fg); }
     .crumbs-date { font-size: 13px; color: var(--faint); }
 
-    #viewer { padding: 32px 12px 56px; }
-    @media (min-width: 768px) { #viewer { padding: 32px 32px 56px; } }
+    /* header-to-content gap matches --head-gap everywhere else on the site */
+    #viewer { padding: var(--head-gap) 12px 56px; }
+    @media (min-width: 768px) { #viewer { padding: var(--head-gap) 32px 56px; } }
     .viewer-frame {
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
@@ -107,21 +182,10 @@
     .viewer-frame video { display: block; width: 100%; height: auto; background: #000; }
     .viewer-meta { display: flex; justify-content: space-between; align-items: baseline; margin-top: 14px; font-size: 12px; color: var(--muted); }
 
-    nav.pager {
-      padding: 24px 12px;
-      display: flex; justify-content: space-between; gap: 16px;
-    }
-    @media (min-width: 768px) { nav.pager { padding: 24px 32px; } }
-    .pager a { display: block; }
-    .pager .dir { font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); margin-bottom: 4px; }
-    .pager .title { font-size: 14px; color: var(--fg); transition: color 0.2s var(--ease); }
-    .pager a:hover .title { color: var(--muted); }
-    .pager .next { text-align: right; margin-left: auto; }
-
     footer.band { padding: 24px 12px 96px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     @media (min-width: 768px) { footer.band { padding: 24px 32px 96px; } }
     footer.band .copy { font-size: 12px; color: var(--faint); }
-    footer.band .contact-link { font-size: 12px; color: var(--muted); cursor: pointer; transition: color 0.2s var(--ease); background: none; border: none; }
+    footer.band .contact-link { font-size: 12px; color: var(--muted); cursor: pointer; transition: color 0.2s var(--ease-out-plain); background: none; border: none; }
     footer.band .contact-link:hover { color: var(--fg); }
 
     .contact-wrap { position: relative; }
@@ -132,11 +196,16 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 12px 14px;
-      opacity: 0; transform: translateY(4px);
+      transform-origin: bottom right;
+      opacity: 0; transform: scale(0.97);
       pointer-events: none;
-      transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+      transition: opacity 0.2s var(--ease-out-plain), transform 0.18s var(--ease-out-plain);
     }
-    .contact-pop.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .contact-pop.open {
+      opacity: 1; pointer-events: auto;
+      transform: scale(1);
+      transition: opacity 0.2s var(--ease-out-plain), transform 0.28s var(--ease-overshoot);
+    }
     .contact-pop-label {
       display: block;
       font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
@@ -151,7 +220,7 @@
       width: 18px; height: 18px;
       background: none; border: none; padding: 0; margin: 0;
       color: var(--fg); cursor: pointer;
-      transition: opacity 0.2s var(--ease);
+      transition: opacity 0.2s var(--ease-out-plain);
       opacity: 0.7;
     }
     .copy-icon:hover { opacity: 1; }
@@ -162,9 +231,67 @@
       padding: 8px 14px; border-radius: var(--radius-sm);
       border: 1px solid var(--border);
       opacity: 0; pointer-events: none; white-space: nowrap; z-index: 300;
-      transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+      transition: opacity 0.25s var(--ease-out-plain), transform 0.25s var(--ease-out-plain);
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ============================================================
+       SHARED MOTION
+       Overshoot is for transforms only, on entrances and hover-in.
+       Every exit is plain and slightly faster than its entrance.
+       ============================================================ */
+    .head-anim { display: inline-block; }
+    .js .head-anim {
+      transform: translateY(10px);
+      opacity: 0;
+      transition: transform 0.42s var(--ease-overshoot), opacity 0.42s var(--ease-out-plain);
+    }
+    body.loaded .head-anim { transform: translateY(0); opacity: 1; }
+
+    /* work cards: overshoot in, plain out */
+    .grid18 .tile:hover {
+      transform: scale(1.02);
+      transition: transform 0.22s var(--ease-overshoot), opacity 0.35s var(--ease-out-plain),
+                  filter 0.35s var(--ease-out-plain), border-color 0.2s var(--ease-out-plain);
+    }
+    .tile-caption .name, .tile-caption .tag {
+      transition: transform 0.18s var(--ease-out-plain);
+    }
+    .tile:hover .tile-caption .name, .tile:hover .tile-caption .tag {
+      transform: translateY(-2px);
+      transition: transform 0.22s var(--ease-overshoot);
+    }
+
+    .copy-icon { position: relative; }
+    .copy-icon svg { position: absolute; inset: 0; margin: auto; }
+    .copy-icon .ico-check { opacity: 0; }
+    .copy-icon.copied .ico-copy { opacity: 0; }
+    .copy-icon.copied .ico-check { opacity: 1; }
+    .copy-icon.copied { animation: copy-pop 0.34s both; }
+    @keyframes copy-pop {
+      0%   { transform: scale(1);    animation-timing-function: var(--ease-overshoot); }
+      38%  { transform: scale(1.15); animation-timing-function: var(--ease-out-plain); }
+      100% { transform: scale(1); }
+    }
+
+    /* title and media arrive together on load, media a beat later */
+    .js .crumbs, .js .crumbs-date {
+      transform: translateY(10px);
+      opacity: 0;
+      transition: transform 0.42s var(--ease-overshoot), opacity 0.42s var(--ease-out-plain);
+    }
+    .js .crumbs-date { transition-delay: 0.05s; }
+    body.loaded .crumbs, body.loaded .crumbs-date { transform: translateY(0); opacity: 1; }
+
+    .js .viewer-frame {
+      transform: translateY(12px);
+      opacity: 0;
+      transition: transform 0.45s var(--ease-overshoot), opacity 0.45s var(--ease-out-plain);
+      transition-delay: 0.1s;
+    }
+    body.loaded .viewer-frame { transform: translateY(0); opacity: 1; }
+
+    
   </style>
 </head>
 <body>
@@ -177,40 +304,32 @@
 
       <header class="band rule dashed">
         <div class="crumbs">
-          <a class="crumb" href="index.html">Alfred Gustafsson</a><span class="sep">/</span><a class="crumb" href="work.html">Work</a><span class="sep">/</span><span class="current">Bezi</span>
+          <a class="crumb" href="portfolio.html">Alfred Gustafsson</a><span class="sep">/</span><a class="crumb" href="work.html">Work</a><span class="sep">/</span><span class="current">Bezi</span>
         </div>
         <span class="crumbs-date">2026</span>
       </header>
 
       <section id="viewer" class="band">
-        <span class="corner tl"></span><span class="corner tr"></span>
         <div class="viewer-frame">
-          <video src="media/bezi.mp4" controls autoplay loop muted playsinline></video>
+          <video src="media/bezi.mp4" controls autoplay loop muted playsinline preload="metadata" poster="media/posters/bezi.jpg"></video>
         </div>
         <div class="viewer-meta">
           <span>Bezi</span>
-          <span>Product demo · 2026</span>
+          <span>Ad concept · 2026</span>
         </div>
       </section>
-
-      <nav class="pager rule">
-        <span class="corner tl"></span><span class="corner tr"></span>
-        <a class="prev" href="raycast.html">
-          <span class="dir">Previous</span>
-          <span class="title">Raycast</span>
-        </a>
-      </nav>
 
       <footer class="band rule">
         <span class="copy">© Alfred Gustafsson 2026</span>
         <div class="contact-wrap">
-          <button type="button" class="contact-link" id="contact-btn">Contact</button>
+          <button type="button" class="contact-link" id="contact-btn" aria-expanded="false" aria-controls="contact-pop">Contact</button>
           <div class="contact-pop" id="contact-pop">
             <span class="contact-pop-label">Email</span>
             <div class="contact-pop-row">
               <span>contact@overshootfx.com</span>
-              <button type="button" class="copy-icon" id="copy-btn" aria-label="Copy email">
-                <svg width="13" height="13" viewBox="0 0 20 20"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/><rect width="10" height="10" x="3" y="3" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" rx="2" ry="2"/></svg>
+              <button type="button" class="copy-icon" id="copy-btn" aria-label="Copy email address">
+                <svg class="ico-copy" width="13" height="13" viewBox="0 0 20 20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/><rect width="10" height="10" x="3" y="3" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" rx="2" ry="2"/></svg>
+                <svg class="ico-check" width="13" height="13" viewBox="0 0 20 20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="m4 10.5 4 4 8-9"/></svg>
               </button>
             </div>
           </div>
@@ -223,32 +342,69 @@
   <script>
     const EMAIL = 'contact@overshootfx.com';
 
+    /* entrances, once, on load */
+    requestAnimationFrame(() => document.body.classList.add('loaded'));
+
     function showToast(msg){
       const t = document.getElementById('toast');
       t.textContent = msg; t.classList.add('show');
       clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('show'), 2200);
     }
-    function copyEmail(){
-      navigator.clipboard.writeText(EMAIL).catch(()=>{
+    async function copyEmail(btn){
+      try {
+        await navigator.clipboard.writeText(EMAIL);
+      } catch {
         const el = Object.assign(document.createElement('textarea'), {value: EMAIL});
-        document.body.appendChild(el); el.select(); document.execCommand('copy'); el.remove();
-      });
+        el.setAttribute('readonly', ''); el.style.position = 'fixed'; el.style.opacity = '0';
+        document.body.appendChild(el); el.select();
+        try { document.execCommand('copy'); } catch {}
+        el.remove();
+      }
+      if (btn){
+        btn.classList.remove('copied');
+        void btn.offsetWidth;
+        btn.classList.add('copied');
+        clearTimeout(btn._t);
+        btn._t = setTimeout(()=>btn.classList.remove('copied'), 1500);
+      }
       showToast('Copied: ' + EMAIL);
     }
-    document.getElementById('copy-btn').addEventListener('click', copyEmail);
+    document.querySelectorAll('.copy-icon').forEach(btn => {
+      btn.addEventListener('click', e => { e.stopPropagation(); copyEmail(btn); });
+    });
 
+    /* ── Contact popover: focus returns to the trigger, Tab stays inside ── */
     const contactBtn = document.getElementById('contact-btn');
     const contactPop = document.getElementById('contact-pop');
+    const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+    function openPop(){
+      contactPop.classList.add('open');
+      contactBtn.setAttribute('aria-expanded', 'true');
+    }
+    function closePop(returnFocus){
+      if (!contactPop.classList.contains('open')) return;
+      contactPop.classList.remove('open');
+      contactBtn.setAttribute('aria-expanded', 'false');
+      if (returnFocus) contactBtn.focus();
+    }
     contactBtn.addEventListener('click', e => {
       e.stopPropagation();
-      contactPop.classList.toggle('open');
+      contactPop.classList.contains('open') ? closePop(false) : openPop();
     });
     document.addEventListener('click', e => {
-      if (contactPop.classList.contains('open') && !contactPop.contains(e.target) && e.target !== contactBtn) {
-        contactPop.classList.remove('open');
+      if (contactPop.classList.contains('open') && !contactPop.contains(e.target) && e.target !== contactBtn) closePop(false);
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape'){ closePop(true); return; }
+      if (e.key === 'Tab' && contactPop.classList.contains('open')){
+        const nodes = Array.from(contactPop.querySelectorAll(FOCUSABLE));
+        if (!nodes.length) return;
+        const first = nodes[0], last = nodes[nodes.length - 1];
+        if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
       }
     });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') contactPop.classList.remove('open'); });
   </script>
 </body>
 </html>
