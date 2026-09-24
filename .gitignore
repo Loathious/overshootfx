@@ -6,7 +6,6 @@
 !.env.example
 .vercel
 .playwright-mcp/
-.claude/
 
 # reference material, not part of the site
 Deadsimplesites inspiration gallery/

@@ -1,13 +1,7 @@
 # Files and folders that should not be published to the live site.
 # Wrangler uploads everything under assets.directory (".") except these.
-.wrangler/
-.git/
-.vercel/
-.claude/
-.playwright-mcp/
-.gitignore
-.vercelignore
-.assetsignore
+# Dotfiles and dot-folders: VCS, deploy config and local tool folders.
+.*
 vercel.json
 wrangler.jsonc
 Deadsimplesites inspiration gallery/
